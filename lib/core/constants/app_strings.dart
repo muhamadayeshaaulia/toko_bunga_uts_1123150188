@@ -22,5 +22,11 @@ class AppStrings {
   static const String emailVerificationSent = 'Email verifikasi sudah dikirim';
   static const String emailVerificationResent = 'Email verifikasi sudah dikirim ulang';
 
+  //Hints
+  static const String emailHint = 'shaxyyy.03@gmail.com';
+  static const String passwordHint = 'Minimal 8 karakter';
+  static const String nameHint = 'Masukkan nama lengkap';
+
+
 
 }
