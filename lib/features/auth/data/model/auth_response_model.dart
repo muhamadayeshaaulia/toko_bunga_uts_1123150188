@@ -50,4 +50,18 @@ class AuthResponseModel {
      required this.user,
   });
 
+
+
+  factory AuthResponseModel.fromJson(Map<String, dynamic> json) {
+    final data = json['data'] as Map<String, dynamic>;
+    return AuthResponseModel(
+      success: json['success'] as bool,
+      message: json['message'] as String,
+      accessToken: data['access_token'] as String,
+      tokenType: data['token_type'] as String,
+      expiresIn: data['expires_in'] as int,
+      user: UserModel.fromJson(data['user'] as Map<String, dynamic>),
+    );
+  }
+
 }
