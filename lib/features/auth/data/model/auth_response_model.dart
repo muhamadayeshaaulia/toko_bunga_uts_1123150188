@@ -1,0 +1,33 @@
+import 'package:flutter/material.dart';
+
+class UserModel {
+  final int id;
+  final String firebaseUid;
+  final String email;
+  final String name;
+  final String role;
+  final bool emailVerified;
+  final String createdAt;
+
+
+  const UserModel({
+    required this.id,
+    required this.firebaseUid,
+    required this.email,
+    required this.name,
+    required this.role,
+    required this.emailVerified,
+    required this.createdAt,
+  });
+
+
+  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
+        id: json['id'] as int,
+        firebaseUid: json['firebase_uid'] as String,
+        email: json['email'] as String,
+        name: json['name'] as String,
+        role: json['role'] as String,
+        emailVerified: json['email_verified'] as bool,
+        createdAt: json['created_at'] as String,
+      );
+}
