@@ -21,6 +21,8 @@ class AuthProvider extends ChangeNotifier {
   User?     _firebaseUser;
   String?   _backendToken; 
   String?   _errorMessage;
+  String?   _tempEmail;
+  String?   _tempPassword;
 
   AuthStatus get status       => _status;
   User?      get firebaseUser  => _firebaseUser;
@@ -28,6 +30,25 @@ class AuthProvider extends ChangeNotifier {
   String?    get errorMessage  => _errorMessage;
   bool       get isLoading     => _status == AuthStatus.loading; 
 
+Future<bool> register({name, email, password}) async {
+  _setLoading(); 
+ 
+
+  final credential = await _auth.createUserWithEmailAndPassword(
+    email: email, password: password,
+  );
+  _firebaseUser = credential.user;
+ 
+
+  await _firebaseUser?.updateDisplayName(name);
+  await _firebaseUser?.sendEmailVerification();
+ 
+  _tempEmail = email;
+  _tempPassword = password;
+ 
+  _status = AuthStatus.emailNotVerified;
+  return true;
+}
 
 
  Future<bool> _verifyTokenToBackend() async {
