@@ -15,4 +15,12 @@ class AppStrings {
   static const String forgotPassword = 'Lupa Password?';
   static const String resetPassword = 'Reset Password';
 
+  //Messages
+  static const String loginSuccess = 'Login berhasil';
+  static const String registerSuccess = 'Pendaftaran berhasil';
+  static const String logoutSuccess = 'Logout berhasil';
+  static const String emailVerificationSent = 'Email verifikasi sudah dikirim';
+  static const String emailVerificationResent = 'Email verifikasi sudah dikirim ulang';
+
+
 }
