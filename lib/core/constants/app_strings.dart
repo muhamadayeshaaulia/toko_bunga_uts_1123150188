@@ -36,5 +36,12 @@ class AppStrings {
   static const String registerFailed = 'Pendaftaran gagal';
   static const String networkError = 'Tidak ada koneksi internet';
 
+  //Dashboard
+  static const String dashboard = 'Dashboard';
+  static const String products = 'Produk';
+  static const String loading = 'Memuat...';
+  static const String retry = 'Coba Lagi';
+  static const String or = 'atau';
+
 
 }
