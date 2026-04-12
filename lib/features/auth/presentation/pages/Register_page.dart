@@ -21,7 +21,33 @@ class _RegisterPageState extends State<RegisterPage> {
     _passCtrl.dispose(); _pass2Ctrl.dispose();
     super.dispose();
   }
+  Future<void> _register() async {
+    if (!_formKey.currentState!.validate()) return;
 
+
+    final auth = context.read<AuthProvider>();
+    final success = await auth.register(
+      name:     _nameCtrl.text.trim(),
+      email:    _emailCtrl.text.trim(),
+      password: _passCtrl.text,
+    );
+
+
+    if (!mounted) return;
+    if (success) {
+      // Navigasi ke halaman instruksi verifikasi email
+      Navigator.pushReplacementNamed(context, AppRouter.verifyEmail);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(auth.errorMessage ?? 'Pendaftaran gagal'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return const Placeholder();
   }
