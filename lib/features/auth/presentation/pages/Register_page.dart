@@ -4,6 +4,7 @@ import '../providers/auth_provider.dart';
 import '../../../widgets/loading_overlay.dart';
 import '../../../widgets/auth_header.dart';
 import '../../../widgets/custom_text_field.dart';
+import '../../../widgets/custom_button.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -54,9 +55,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    rfinal isLoading = context.watch<AuthProvider>().isLoading;
-
-
+    final isLoading = context.watch<AuthProvider>().isLoading;
     return LoadingOverlay(
       isLoading: isLoading,
       message: 'Mendaftarkan akun...',
