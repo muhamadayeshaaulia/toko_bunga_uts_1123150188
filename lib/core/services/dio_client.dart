@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../constants/api_constants.dart';
+import 'secure_storage.dart';
 
 class DioClient {
   static Dio? _instance;
@@ -15,6 +16,25 @@ class DioClient {
       receiveTimeout: Duration(milliseconds: ApiConstants.receiveTimeout),
       headers: {'Content-Type': 'application/json'},
     ));
+  // Interceptor 1: Logging
+    dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        debugPrint('[REQUEST] ${options.method} ${options.path}');
+        handler.next(options);
+      },
+      onResponse: (response, handler) {
+        debugPrint('[RESPONSE] ${response.statusCode}');
+        handler.next(response);
+      },
+      onError: (error, handler) async {
+        debugPrint('[ERROR] ${error.response?.statusCode}');
+        if (error.response?.statusCode == 401) {
+          await SecureStorageService.clearAll(); // Auto logout
+        }
+        handler.next(error);
+      },
+    ));
+
 
     
   }
