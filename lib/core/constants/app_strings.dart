@@ -27,6 +27,14 @@ class AppStrings {
   static const String passwordHint = 'Minimal 8 karakter';
   static const String nameHint = 'Masukkan nama lengkap';
 
+  //error messages
+  static const String fieldRequired = 'Wajib diisi';
+  static const String emailInvalid = 'Format email tidak valid';
+  static const String passwordTooShort = 'Password minimal 8 karakter';
+  static const String passwordMismatch = 'Password tidak cocok';
+  static const String loginFailed = 'Login gagal';
+  static const String registerFailed = 'Pendaftaran gagal';
+  static const String networkError = 'Tidak ada koneksi internet';
 
 
 }
