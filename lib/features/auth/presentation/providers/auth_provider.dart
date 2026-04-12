@@ -10,7 +10,7 @@ import '../../../../core/services/secure_storage.dart';
   loading,
   authenticated,
   unauthenticated,
-  emailNoVerified,
+  emailNotVerified,
   error,
  }
 class AuthProvider extends ChangeNotifier {
