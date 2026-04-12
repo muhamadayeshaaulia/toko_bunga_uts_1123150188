@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-enum ButtonType { primary, outline, text }
+enum ButtonVariant { primary, outline, text }
 
 class CustomButton extends StatelessWidget {
   final String label;
