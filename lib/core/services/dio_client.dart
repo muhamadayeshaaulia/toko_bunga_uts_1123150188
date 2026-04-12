@@ -34,6 +34,17 @@ class DioClient {
         handler.next(error);
       },
     ));
+    //Auto-inject Bearer Token
+    dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        final token = await SecureStorageService.getToken();
+        if (token != null) {
+          options.headers['Authorization'] = 'Bearer $token';
+        }
+        handler.next(options);
+      },
+    ));
+ 
 
 
     
