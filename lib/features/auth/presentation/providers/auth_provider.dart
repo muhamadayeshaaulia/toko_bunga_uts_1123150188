@@ -105,3 +105,20 @@ Future<bool> loginWithGoogle() async {
     }
   }
 
+  Future<void> resendVerificationEmail() async {
+    await _firebaseUser?.sendEmailVerification();
+  }
+
+
+  // ─── Cek status verifikasi email (polling) ────────────────
+  Future<bool> checkEmailVerified() async {
+    await _firebaseUser?.reload(); // Refresh data user dari Firebase
+    _firebaseUser = _auth.currentUser;
+
+
+    if (_firebaseUser?.emailVerified ?? false) {
+      return await _verifyTokenToBackend();
+    }
+    return false;
+  }
+
