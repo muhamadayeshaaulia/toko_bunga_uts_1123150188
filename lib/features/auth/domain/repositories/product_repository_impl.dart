@@ -27,5 +27,4 @@ class ProductRepositoryImpl implements ProductRepository{
     );
     return ProductModel.fromJson(response.data['data']);
   }
-
 }
