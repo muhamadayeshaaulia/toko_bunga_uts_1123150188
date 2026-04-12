@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class DividerWithText extends StatelessWidget {
+  final String text;
   const DividerWithText({super.key});
 
   @override
