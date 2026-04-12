@@ -16,6 +16,12 @@ class _RegisterPageState extends State<RegisterPage> {
   bool  _showPass   = false;
 
   @override
+  void dispose() {
+    _nameCtrl.dispose(); _emailCtrl.dispose();
+    _passCtrl.dispose(); _pass2Ctrl.dispose();
+    super.dispose();
+  }
+
   Widget build(BuildContext context) {
     return const Placeholder();
   }
