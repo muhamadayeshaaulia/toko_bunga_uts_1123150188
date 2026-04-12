@@ -25,7 +25,7 @@ class AuthProvider extends ChangeNotifier {
   String?    get errorMessage  => _errorMessage;
   bool       get isLoading     => _status == AuthStatus.loading; 
 
- }
+
 
  Future<bool> _verifyTokenToBackend() async {
   // Ambil Firebase ID Token (expired tiap 1 jam)
@@ -110,9 +110,8 @@ Future<bool> loginWithGoogle() async {
   }
 
 
-  // ─── Cek status verifikasi email (polling) ────────────────
   Future<bool> checkEmailVerified() async {
-    await _firebaseUser?.reload(); // Refresh data user dari Firebase
+    await _firebaseUser?.reload();
     _firebaseUser = _auth.currentUser;
 
 
@@ -131,4 +130,28 @@ Future<void> logout() async {
     _status = AuthStatus.unauthenticated;
     notifyListeners();
   }
+void _setLoading() {
+    _status = AuthStatus.loading;
+    _errorMessage = null;
+    notifyListeners();
+  }
+
+
+  void _setError(String message) {
+    _status = AuthStatus.error;
+    _errorMessage = message;
+    notifyListeners();
+  }
+
+
+  String _mapFirebaseError(String code) => switch (code) {
+    'email-already-in-use'  => 'Email sudah terdaftar. Gunakan email lain.',
+    'user-not-found'        => 'Akun tidak ditemukan. Silakan daftar.',
+    'wrong-password'        => 'Password salah. Coba lagi.',
+    'invalid-email'        => 'Format email tidak valid.',
+    'weak-password'        => 'Password terlalu lemah. Minimal 6 karakter.',
+    'network-request-failed'=> 'Tidak ada koneksi internet.',
+    _                      => 'Terjadi kesalahan. Coba lagi.',
+  };
+}
 
