@@ -8,7 +8,13 @@ class CustomButton extends StatelessWidget {
   final ButtonVariant variant;
   final Widget? icon;
 
-  const CustomButton({super.key});
+  const CustomButton({super.key,
+  required this.label,
+    this.onPressed,
+    this.isLoading = false,
+    this.variant = ButtonVariant.primary,
+    this.icon,
+});
 
   @override
   Widget build(BuildContext context) {
