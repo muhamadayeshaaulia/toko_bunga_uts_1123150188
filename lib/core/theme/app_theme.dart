@@ -26,6 +26,13 @@ class AppTheme {
           elevation: 2,
         ),
       ),
+    inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: Colors.grey.shade50,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
 
     );
   }
