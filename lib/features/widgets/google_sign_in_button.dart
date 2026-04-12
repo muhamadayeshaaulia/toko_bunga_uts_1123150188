@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class GoogleSignInButton extends StatelessWidget {
   final VoidCallback? onPressed;
@@ -27,7 +28,9 @@ class GoogleSignInButton extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Logo Google — download dari: fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg
-                  Image.asset('assets/icons/Google.svg', height: 22),
+                  SvgPicture.asset(
+                    'assets/icons/Google.svg', 
+                    height: 22,),
                   const SizedBox(width: 12),
                   const Text(
                     'Lanjutkan dengan Google',
