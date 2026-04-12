@@ -44,9 +44,6 @@ class DioClient {
         handler.next(options);
       },
     ));
- 
-
-
-    
+    return dio;
   }
 }
