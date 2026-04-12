@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uts_1123150188_semester6/features/auth/presentation/pages/Register_page.dart';
 
 class AppRouter {
   static const String splash      = '/';
