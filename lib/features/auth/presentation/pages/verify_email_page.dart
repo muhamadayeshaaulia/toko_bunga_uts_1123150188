@@ -40,7 +40,26 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       }
     });
   }
+  Future<void> _resendEmail() async {
+    if (_resendCooldown) return;
+    await context.read<AuthProvider>().resendVerificationEmail();
 
+
+    // Cooldown 60 detik sebelum bisa kirim lagi
+    setState(() { _resendCooldown = true; _countdown = 60; });
+    Timer.periodic(const Duration(seconds: 1), (t) {
+    setState(() { _countdown--; });
+      if (_countdown <= 0) {
+        t.cancel();
+        setState(() => _resendCooldown = false);
+      }
+    });
+
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Email verifikasi sudah dikirim ulang')),
+    );
+  }
 
 
   @override
