@@ -64,6 +64,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<AuthProvider>().firebaseUser;
     return const Placeholder();
   }
 }
