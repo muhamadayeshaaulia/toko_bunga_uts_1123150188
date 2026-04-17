@@ -19,6 +19,14 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     _startPolling();
   }
 
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return const Placeholder();
