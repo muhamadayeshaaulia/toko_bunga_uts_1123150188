@@ -54,6 +54,22 @@ class _DashboardPageState extends State<DashboardPage> {
               ],
             ),
           ),
+      ProductStatus.error => Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                const SizedBox(height: 16),
+                Text(product.error ?? 'Terjadi kesalahan'),
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Coba Lagi'),
+                  onPressed: () => product.fetchProducts(),
+                ),
+              ],
+            ),
+          ),
 
     );
   }
