@@ -24,6 +24,9 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     final auth    = context.watch<AuthProvider>();
     final product = context.watch<ProductProvider>();
+    final isLoading = product.isLoading;
+    final hasError = product.error != null;
+    final products = product.products;
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -47,7 +50,7 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ],
       ),
-      body: switch (product.status) {
+      body: switch (products.status) {
         ProductStatus.loading || ProductStatus.initial => const Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -138,6 +141,10 @@ class _DashboardPageState extends State<DashboardPage> {
               },
             ),
           ),
+        // TODO: Handle this case.
+        Object() => throw UnimplementedError(),
+        // TODO: Handle this case.
+        null => throw UnimplementedError(),
       },
     );
   }

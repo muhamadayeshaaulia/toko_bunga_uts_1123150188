@@ -12,6 +12,10 @@ class ProductProvider extends ChangeNotifier {
   String? _error;
 
   var products;
+
+  Object? get isLoading => null;
+
+  get error => null;
  
   Future<void> fetchProducts() async {
     // 1. Set status loading → UI tampilkan spinner

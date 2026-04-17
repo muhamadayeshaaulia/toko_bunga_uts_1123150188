@@ -5,7 +5,6 @@ import 'package:uts_1123150188_semester6/features/auth/presentation/pages/login_
 import 'package:uts_1123150188_semester6/features/auth/presentation/pages/verify_email_page.dart';
 import 'package:uts_1123150188_semester6/features/dashboard/presentation/pages/dashboard_page.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
-import 'router_guard.dart';
 
 
 class AuthGuard extends StatelessWidget {
@@ -42,6 +41,6 @@ class AppRouter {
 
   };
 
-    
+
 
 }
