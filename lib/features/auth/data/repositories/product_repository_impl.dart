@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/services/dio_client.dart';
+import '../../../dashboard/data/model/product_model.dart';
+import '../../../dashboard/domain/repositories/product_repository.dart';
 
 class ProductRepositoryImpl implements ProductRepository{
   @override

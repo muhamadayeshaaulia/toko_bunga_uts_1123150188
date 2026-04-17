@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:uts_1123150188_semester6/features/auth/presentation/pages/Register_page.dart';
 import 'package:uts_1123150188_semester6/features/auth/presentation/pages/login_page.dart';
 import 'package:uts_1123150188_semester6/features/auth/presentation/pages/verify_email_page.dart';
+import 'package:uts_1123150188_semester6/features/dashboard/presentation/pages/dashboard_page.dart';
+
 
 
 class AppRouter {
@@ -19,5 +21,7 @@ class AppRouter {
     verifyEmail: (_) => const VerifyEmailPage(),
     dashboard:   (_) => const AuthGuard(child: DashboardPage()),
   };
+
+  
 
 }

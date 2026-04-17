@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../../core/routes/app_router.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
+import '../providers/product_provider.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -96,6 +100,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         child: Image.network(
                           p.imageUrl, height: 120, width: double.infinity,
                           fit: BoxFit.cover,
+                          // ignore: unnecessary_underscores
                           errorBuilder: (_, __, ___) => Container(
                             height: 120,
                             color: Colors.grey.shade200,
@@ -109,7 +114,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(p.name,
-                                                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                               maxLines: 2, overflow: TextOverflow.ellipsis),
                             const SizedBox(height: 4),
                             Text('Rp ${p.price.toStringAsFixed(0)}',
