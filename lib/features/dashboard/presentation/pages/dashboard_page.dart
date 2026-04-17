@@ -32,7 +32,17 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
           ],
         ),
-
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              await auth.logout();
+              if (!mounted) return;
+              Navigator.pushReplacementNamed(context, AppRouter.login);
+            },
+          ),
+        ],
+      ),
 
     );
   }
