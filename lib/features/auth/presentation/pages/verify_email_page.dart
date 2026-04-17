@@ -8,6 +8,17 @@ class VerifyEmailPage extends StatefulWidget {
 }
 
 class _VerifyEmailPageState extends State<VerifyEmailPage> {
+  Timer? _timer;
+  bool   _resendCooldown = false;
+  int    _countdown = 60;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _startPolling();
+  }
+
   @override
   Widget build(BuildContext context) {
     return const Placeholder();
