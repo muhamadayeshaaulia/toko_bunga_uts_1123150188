@@ -1,4 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import '../../../../core/constants/api_constants.dart';
+import '../../../../core/services/dio_client.dart';
+import '../../data/model/product_model.dart';
 
 enum ProductStatus { initial, loading, loaded, error }
 
@@ -26,7 +30,6 @@ class ProductProvider extends ChangeNotifier {
       _error = e.response?.data['message'] ?? 'Gagal memuat produk';
       _status = ProductStatus.error;
     }
- 
+  }
     notifyListeners(); // Beritahu semua widget yang listen
   }
-}
