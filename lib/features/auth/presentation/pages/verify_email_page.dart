@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uts_1123150188_semester6/core/routes/app_router.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
-import '../../../../features//widgets/auth_header.dart';
-import '../../../../features//widgets/custom_button.dart';
+import '../widgets/auth_header.dart';
+import '../widgets/custom_button.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   const VerifyEmailPage({super.key});
