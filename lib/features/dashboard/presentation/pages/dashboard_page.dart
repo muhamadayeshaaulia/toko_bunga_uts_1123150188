@@ -43,6 +43,17 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ],
       ),
+      body: switch (product.status) {
+        ProductStatus.loading || ProductStatus.initial => const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text('Memuat produk...'),
+              ],
+            ),
+          ),
 
     );
   }
