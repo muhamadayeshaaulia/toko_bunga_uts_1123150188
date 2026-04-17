@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:uts_1123150188_semester6/core/routes/app_router.dart';
+import '../../../../core/routes/app_router.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   const VerifyEmailPage({super.key});
