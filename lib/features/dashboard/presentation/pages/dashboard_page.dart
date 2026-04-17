@@ -21,7 +21,19 @@ class _DashboardPageState extends State<DashboardPage> {
     final auth    = context.watch<AuthProvider>();
     final product = context.watch<ProductProvider>();
     return Scaffold(
-      
+      appBar: AppBar(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Dashboard', style: TextStyle(fontSize: 18)),
+            Text(
+              'Halo, ${auth.firebaseUser?.displayName ?? 'User'}!',
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.normal),
+            ),
+          ],
+        ),
+
+
     );
   }
 }
