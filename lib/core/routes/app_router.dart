@@ -5,6 +5,7 @@ import 'package:uts_1123150188_semester6/features/auth/presentation/pages/login_
 import 'package:uts_1123150188_semester6/features/auth/presentation/pages/verify_email_page.dart';
 import 'package:uts_1123150188_semester6/features/dashboard/presentation/pages/dashboard_page.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
+import '../../features/dashboard/presentation/pages/splash_page.dart';
 
 
 class AuthGuard extends StatelessWidget {
@@ -40,60 +41,4 @@ class AppRouter {
     dashboard:   (_) => const AuthGuard(child: DashboardPage()),
 
   };
-
-  class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-
-  @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-            ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => ProductProvider()),
-      ],
-      child: MaterialApp(
-        title:                  'My App',
-        debugShowCheckedModeBanner: false,
-        theme:                  AppTheme.light,
-        initialRoute:           AppRouter.splash,
-        routes:                 AppRouter.routes,
-      ),
-    );
-  }
-}
-
-
-// SplashPage: cek token tersimpan, redirect otomatis
-class SplashPage extends StatefulWidget {
-  const SplashPage({super.key});
-  @override State<SplashPage> createState() => _SplashPageState();
-}
-
-
-class _SplashPageState extends State<SplashPage> {
-  @override
-  void initState() {
-    super.initState();
-    _checkAuth();
-  }
-
-
-  Future<void> _checkAuth() async {
-    await Future.delayed(const Duration(seconds: 2)); // Animasi splash
-    if (!mounted) return;
-
-
-    final token = await SecureStorageService.getToken();
-    final route = token != null ? AppRouter.dashboard : AppRouter.login;
-    Navigator.pushReplacementNamed(context, route);
-  }
-
-
-  @override
-  Widget build(BuildContext context) => const Scaffold(
-    body: Center(child: CircularProgressIndicator()),
-  );
-}
-
 }
