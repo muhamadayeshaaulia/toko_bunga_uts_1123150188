@@ -144,25 +144,32 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Verifikasi Token ke Backend (Laravel/Golang)
   Future<bool> _verifyTokenToBackend() async {
     try {
-      final firebaseToken = await _firebaseUser?.getIdToken();
+
+      final firebaseToken = await _firebaseUser?.getIdToken(true); 
+
+      print("DEBUG: Mengirim token baru ke backend...");
 
       final response = await DioClient.instance.post(
         ApiConstants.verifyToken,
         data: {'firebase_token': firebaseToken},
       );
 
-      final data = response.data['data'] as Map<String, dynamic>;
-      _backendToken = data['access_token'] as String;
+      if (response.statusCode == 200) {
+        final data = response.data['data'] as Map<String, dynamic>;
+        _backendToken = data['access_token'] as String;
 
-      await SecureStorageService.saveToken(_backendToken!);
+        await SecureStorageService.saveToken(_backendToken!);
 
-      _status = AuthStatus.authenticated;
-      notifyListeners();
-      return true;
+        _status = AuthStatus.authenticated;
+        _errorMessage = null; 
+        notifyListeners();
+        return true;
+      }
+      return false;
     } catch (e) {
+      print("DEBUG: Verifikasi Backend Gagal: $e");
       _setError('Gagal verifikasi ke server.');
       return false;
     }

@@ -36,12 +36,14 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     if (!mounted) return;
     
     final auth = context.read<AuthProvider>();
+    print("DEBUG: Sedang mengecek status verifikasi..."); // Tambahkan ini
+    
     final success = await auth.checkEmailVerified();
+    print("DEBUG: Hasil checkEmailVerified: $success"); // Tambahkan ini
 
     if (success && mounted) {
+      print("DEBUG: Sukses! Pindah ke Dashboard.");
       _timer?.cancel();
-      
-      // NAVIGASI PAKSA KE DASHBOARD
       Navigator.pushNamedAndRemoveUntil(
         context, 
         AppRouter.dashboard, 
