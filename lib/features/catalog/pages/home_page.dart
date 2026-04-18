@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../dashboard/data/model/product_model.dart';
+import '../../../../features/auth/presentation/providers/auth_provider.dart';
+import '../../dashboard/data/model/product_model.dart' hide AuthProvider;
 import '../../dashboard/presentation/providers/product_provider.dart';
 
 class HomePage extends StatefulWidget {

@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
           create: (_) => AuthProvider()..initializeAuth(), 
         ),
         ChangeNotifierProvider(
-          create: (_) => ProductProvider(), 
+          create: (_) => ProductProvider()..fetchProducts(),
         ),
       ],
       child: MaterialApp(
