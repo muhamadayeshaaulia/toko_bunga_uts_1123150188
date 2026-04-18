@@ -6,8 +6,6 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // DashboardPage sekarang fokus menjadi "Shell" atau pembungkus utama
-    // yang isinya dikendalikan oleh MainNavigation
     return const MainNavigation();
   }
 }
