@@ -3,10 +3,13 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart'; 
 import '../../../../core/services/dio_client.dart';
+import '../../data/model/cart_model.dart';
 
 class CartProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
+  List<CartModel> _cartItems = [];
+  List<CartModel> get cartItems => _cartItems;
 
   Future<void> addToCart(int? productId) async {
     if (productId == null || productId == 0) return;

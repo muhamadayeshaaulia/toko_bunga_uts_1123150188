@@ -22,7 +22,7 @@ class _CartPageState extends State<CartPage> {
   @override
   Widget build(BuildContext context) {
     final cartProvider = context.watch<CartProvider>();
-    final cartItems = cartProvider.cart;
+    final cartItems = cartProvider.cartItems;
 
     return Scaffold(
       appBar: AppBar(
