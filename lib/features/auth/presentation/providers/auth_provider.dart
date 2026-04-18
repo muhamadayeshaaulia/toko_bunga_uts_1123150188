@@ -65,7 +65,7 @@ class AuthProvider extends ChangeNotifier {
       if (_firebaseUser != null) {
         await _firebaseUser?.updateDisplayName(name);
         await DioClient.instance.post(
-          '/auth/register', 
+          ApiConstants.register,
           data: {
             'uid': _firebaseUser!.uid,
             'name': name,
