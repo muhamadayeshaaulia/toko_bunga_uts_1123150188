@@ -177,5 +177,26 @@ void _setLoading() {
     'network-request-failed'=> 'Tidak ada koneksi internet.',
     _                      => 'Terjadi kesalahan. Coba lagi.',
   };
+  Future<void> initializeAuth() async {
+  _status = AuthStatus.loading;
+  // notifyListeners(); // Opsional, tergantung apakah kamu ingin splash screen loading
+
+  _firebaseUser = _auth.currentUser;
+  final savedToken = await SecureStorageService.getToken();
+
+  if (_firebaseUser != null && savedToken != null) {
+    // Jika user ada di firebase dan token ada di storage
+    if (_firebaseUser!.emailVerified) {
+      _backendToken = savedToken;
+      _status = AuthStatus.authenticated;
+    } else {
+      _status = AuthStatus.emailNotVerified;
+    }
+  } else {
+    _status = AuthStatus.unauthenticated;
+  }
+  
+  notifyListeners();
+}
 }
 

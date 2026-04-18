@@ -14,7 +14,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        // Panggil initializeAuth segera setelah provider dibuat
+        ChangeNotifierProvider(
+          create: (_) => AuthProvider()..initializeAuth(), 
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
