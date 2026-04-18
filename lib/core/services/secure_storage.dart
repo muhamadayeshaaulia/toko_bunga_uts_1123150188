@@ -20,5 +20,4 @@ class SecureStorageService {
  
   static Future<void> clearAll() async =>
       _storage.deleteAll();
-
 }
