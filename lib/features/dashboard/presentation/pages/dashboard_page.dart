@@ -12,9 +12,10 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  @override
   void initState() {
     super.initState();
-    // Fetch produk begitu halaman dibuka
+    // Memanggil API Golang segera setelah halaman muncul
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ProductProvider>().fetchProducts();
     });
@@ -22,26 +23,29 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    final auth    = context.watch<AuthProvider>();
-    final product = context.watch<ProductProvider>();
-    final isLoading = product.isLoading;
-    final hasError = product.error != null;
-    final products = product.products;
+    // Pastikan import AuthProvider di atas polos (tanpa alias gap)
+    final auth = context.watch<AuthProvider>();
+    final productProvider = context.watch<ProductProvider>();
+    final products = productProvider.products;
+
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Dashboard', style: TextStyle(fontSize: 18)),
+            const Text('Katalog Produk', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             Text(
-              'Halo, ${auth.firebaseUser?.displayName ?? 'User'}!',
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.normal),
+              'Halo, ${auth.firebaseUser?.displayName ?? 'Pengguna'}!',
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout_rounded, color: Colors.redAccent),
             onPressed: () async {
               await auth.logout();
               if (!mounted) return;
@@ -50,101 +54,121 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ],
       ),
-      body: switch (products.status) {
+      // PERBAIKAN UTAMA: Switch berdasarkan status di Provider
+      body: switch (productProvider.status) {
         ProductStatus.loading || ProductStatus.initial => const Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CircularProgressIndicator(),
                 SizedBox(height: 16),
-                Text('Memuat produk...'),
+                Text('Menarik data dari server...'),
               ],
             ),
           ),
-      ProductStatus.error => Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                const SizedBox(height: 16),
-                Text(product.error ?? 'Terjadi kesalahan'),
-                const SizedBox(height: 16),
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.refresh),
-                  label: const Text('Coba Lagi'),
-                  onPressed: () => product.fetchProducts(),
-                ),
-              ],
-            ),
-          ),
-
-
-        ProductStatus.loaded => RefreshIndicator(
-            onRefresh: () => product.fetchProducts(),
-            child: GridView.builder(
-              padding: const EdgeInsets.all(16),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.75,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
+        
+        ProductStatus.error => Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.cloud_off, size: 80, color: Colors.grey),
+                  const SizedBox(height: 16),
+                  Text(
+                    productProvider.error ?? 'Gagal terhubung ke server',
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton.icon(
+                    onPressed: () => productProvider.fetchProducts(),
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Coba Lagi'),
+                  ),
+                ],
               ),
-              itemCount: product.products.length,
-              itemBuilder: (context, i) {
-                final p = product.products[i];
-                return Card(
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ClipRRect(
-                        borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                        child: Image.network(
-                          p.imageUrl, height: 120, width: double.infinity,
-                          fit: BoxFit.cover,
-                          // ignore: unnecessary_underscores
-                          errorBuilder: (_, __, ___) => Container(
-                            height: 120,
-                            color: Colors.grey.shade200,
-                            child: const Icon(Icons.image_not_supported, size: 40),
+            ),
+          ),
+
+        ProductStatus.loaded => products.isEmpty
+          ? const Center(child: Text('Belum ada produk di database.'))
+          : RefreshIndicator(
+              onRefresh: () => productProvider.fetchProducts(),
+              child: GridView.builder(
+                padding: const EdgeInsets.all(16),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.7,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                ),
+                itemCount: products.length,
+                itemBuilder: (context, i) {
+                  final p = products[i];
+                  return Card(
+                    elevation: 3,
+                    shadowColor: Colors.black12,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+                            child: Image.network(
+                              p.imageUrl,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Container(
+                                color: Colors.grey.shade100,
+                                child: const Icon(Icons.broken_image_outlined, color: Colors.grey),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(p.name,
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                              maxLines: 2, overflow: TextOverflow.ellipsis),
-                            const SizedBox(height: 4),
-                            Text('Rp ${p.price.toStringAsFixed(0)}',
-                              style: const TextStyle(color: Color(0xFF1565C0), fontWeight: FontWeight.w600)),
-                            const SizedBox(height: 4),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: Colors.blue.shade50,
-                                borderRadius: BorderRadius.circular(20),
+                        Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                p.name,
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              child: Text(p.category,
-                                style: const TextStyle(fontSize: 11, color: Color(0xFF1565C0))),
-                            ),
-                          ],
+                              const SizedBox(height: 4),
+                              Text(
+                                'Rp ${p.price.toStringAsFixed(0)}',
+                                style: const TextStyle(
+                                  color: Colors.blueAccent,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.shade50,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  p.category,
+                                  style: const TextStyle(fontSize: 10, color: Colors.blue),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              },
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-        // TODO: Handle this case.
-        Object() => throw UnimplementedError(),
-        // TODO: Handle this case.
-        null => throw UnimplementedError(),
+        
+        // Menangani case yang tidak terdefinisi agar tidak error
+        _ => const SizedBox.shrink(),
       },
     );
   }

@@ -10,32 +10,31 @@ class ProductProvider extends ChangeNotifier {
   ProductStatus _status = ProductStatus.initial;
   List<ProductModel> _products = [];
   String? _error;
+  ProductStatus get status => _status;
+  List<ProductModel> get products => _products;
+  String? get error => _error;
+  bool get isLoading => _status == ProductStatus.loading;
 
-  var products;
-
-  Object? get isLoading => null;
-
-  get error => null;
- 
   Future<void> fetchProducts() async {
-    // 1. Set status loading → UI tampilkan spinner
     _status = ProductStatus.loading;
+    _error = null; 
     notifyListeners();
  
     try {
-      // 2. Hit API — token otomatis di-inject interceptor
       final response = await DioClient.instance.get(ApiConstants.products);
-      // 3. Parse JSON array menjadi List<ProductModel>
-      final List<dynamic> data = response.data['data'];
+      final List<dynamic> data = response.data['data'] ?? [];
       _products = data.map((e) => ProductModel.fromJson(e)).toList();
- 
-      // 4. Set status loaded → UI tampilkan grid produk
       _status = ProductStatus.loaded;
     } on DioException catch (e) {
-      // 5. Jika error → set status error → UI tampilkan pesan
-      _error = e.response?.data['message'] ?? 'Gagal memuat produk';
+      _error = e.response?.data['message'] ?? 'Gagal memuat produk dari server';
       _status = ProductStatus.error;
+      debugPrint("Dio Error: ${e.message}");
+    } catch (e) {
+      _error = "Terjadi kesalahan sistem";
+      _status = ProductStatus.error;
+      debugPrint("General Error: $e");
+    } finally {
+      notifyListeners();
     }
   }
-    notifyListeners(); // Beritahu semua widget yang listen
-  }
+}

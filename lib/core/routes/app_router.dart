@@ -5,7 +5,7 @@ import 'package:uts_1123150188_semester6/features/auth/presentation/pages/login_
 import 'package:uts_1123150188_semester6/features/auth/presentation/pages/verify_email_page.dart';
 import 'package:uts_1123150188_semester6/features/dashboard/presentation/pages/dashboard_page.dart';
 import '../../features/dashboard/presentation/pages/splash_page.dart';
-import '../../features/auth/presentation/providers/auth_provider.dart' as gap;
+import '../../features/auth/presentation/providers/auth_provider.dart';
 
 class AuthGuard extends StatelessWidget {
   final Widget child;
@@ -14,14 +14,13 @@ class AuthGuard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Gunakan alias gap.AuthProvider
-    final auth = context.watch<gap.AuthProvider>();
+    final auth = context.watch<AuthProvider>();
     final status = auth.status;
  
     return switch (status) {
-      gap.AuthStatus.authenticated    => child,
-      gap.AuthStatus.emailNotVerified => const VerifyEmailPage(),
-      gap.AuthStatus.loading || gap.AuthStatus.initial => const Scaffold(
+      AuthStatus.authenticated    => child,
+      AuthStatus.emailNotVerified => const VerifyEmailPage(),
+      AuthStatus.loading || AuthStatus.initial => const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       ),
       _ => const LoginPage(),

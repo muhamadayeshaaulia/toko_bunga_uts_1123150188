@@ -7,7 +7,6 @@ class ProductModel {
   final String imageUrl;
   final String category;
 
-
   const ProductModel({
     required this.id,
     required this.name,
@@ -16,15 +15,15 @@ class ProductModel {
     required this.category,
   });
 
-
-  factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
-    id:       json['id']        as int,
-    name:     json['name']      as String,
-    price:    (json['price'] as num).toDouble(),
-    imageUrl: json['image_url'] as String,
-    category: json['category'] as String,
-  );
-
+  factory ProductModel.fromJson(Map<String, dynamic> json) {
+    return ProductModel(
+      id:       (json['id'] ?? 0) as int,
+      name:     json['name'] ?? 'Tanpa Nama',
+      price:    (json['price'] ?? 0.0).toDouble(),
+      imageUrl: json['image_url'] ?? '',
+      category: json['category'] ?? 'Umum',
+    );
+  }
 
   @override
   List<Object?> get props => [id, name, price];
