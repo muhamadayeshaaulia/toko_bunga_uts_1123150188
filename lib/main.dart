@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'core/routes/app_router.dart';
 import 'features/auth/presentation/providers/auth_provider.dart';
+import 'features/dashboard/presentation/providers/cart_provider.dart';
 import 'features/dashboard/presentation/providers/product_provider.dart';
 import 'firebase_options.dart'; 
 
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => ProductProvider()..fetchProducts(),
         ),
+        ChangeNotifierProvider(create: (_) => CartProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
