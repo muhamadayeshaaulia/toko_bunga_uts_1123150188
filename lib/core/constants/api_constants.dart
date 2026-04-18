@@ -5,6 +5,7 @@ class ApiConstants {
  
   // Auth endpoints
   static const String verifyToken = '/auth/verify-token';
+  static const String register    = '/auth/register';
  
   // Product endpoints
   static const String products = '/products';

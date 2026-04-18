@@ -53,7 +53,6 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Register User Baru
   Future<bool> register({required String name, required String email, required String password}) async {
     _setLoading();
     try {
@@ -63,14 +62,28 @@ class AuthProvider extends ChangeNotifier {
       );
       _firebaseUser = credential.user;
 
-      await _firebaseUser?.updateDisplayName(name);
-      await _firebaseUser?.sendEmailVerification();
+      if (_firebaseUser != null) {
+        await _firebaseUser?.updateDisplayName(name);
+        await DioClient.instance.post(
+          '/auth/register', 
+          data: {
+            'uid': _firebaseUser!.uid,
+            'name': name,
+            'email': email,
+          },
+        );
 
-      _status = AuthStatus.emailNotVerified;
-      notifyListeners();
-      return true;
+        await _firebaseUser?.sendEmailVerification();
+        _status = AuthStatus.emailNotVerified;
+        notifyListeners();
+        return true;
+      }
+      return false;
     } on FirebaseAuthException catch (e) {
       _setError(_mapFirebaseError(e.code));
+      return false;
+    } catch (e) {
+      _setError('Gagal mendaftar ke server: $e');
       return false;
     }
   }
@@ -154,17 +167,27 @@ class AuthProvider extends ChangeNotifier {
       return false;
     }
   }
-
-  /// Cek Status Verifikasi Email (Dipanggil dari tombol di VerifyEmailPage)
-  Future<bool> checkEmailVerified() async {
-    await _firebaseUser?.reload();
+Future<bool> checkEmailVerified() async {
+  try {
+    await _auth.currentUser?.reload();
     _firebaseUser = _auth.currentUser;
 
     if (_firebaseUser?.emailVerified ?? false) {
-      return await _verifyTokenToBackend();
+
+      final isBackendVerified = await _verifyTokenToBackend();
+      
+      if (isBackendVerified) {
+        _status = AuthStatus.authenticated;
+        _errorMessage = null;
+        notifyListeners();
+        return true; 
+      }
     }
-    return false;
+  } catch (e) {
+    debugPrint("Gagal polling email: $e");
   }
+  return false;
+}
 
   Future<void> resendVerificationEmail() async {
     await _firebaseUser?.sendEmailVerification();

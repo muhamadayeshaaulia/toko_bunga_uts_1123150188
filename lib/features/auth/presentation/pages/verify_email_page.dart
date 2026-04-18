@@ -31,18 +31,25 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     _timer?.cancel();
     super.dispose();
   }
-  // Polling: cek setiap 5 detik apakah email sudah diverifikasi
   void _startPolling() {
-    _timer = Timer.periodic(const Duration(seconds: 5), (_) async {
-      if (!mounted) return;
-      final auth    = context.read<AuthProvider>();
-      final success = await auth.checkEmailVerified();
-      if (success && mounted) {
-        _timer?.cancel();
-        Navigator.pushReplacementNamed(context, AppRouter.dashboard);
-      }
-    });
-  }
+  _timer = Timer.periodic(const Duration(seconds: 5), (_) async {
+    if (!mounted) return;
+    
+    final auth = context.read<AuthProvider>();
+    final success = await auth.checkEmailVerified();
+
+    if (success && mounted) {
+      _timer?.cancel();
+      
+      // NAVIGASI PAKSA KE DASHBOARD
+      Navigator.pushNamedAndRemoveUntil(
+        context, 
+        AppRouter.dashboard, 
+        (route) => false,
+      );
+    }
+  });
+}
   Future<void> _resendEmail() async {
     if (_resendCooldown) return;
     await context.read<AuthProvider>().resendVerificationEmail();

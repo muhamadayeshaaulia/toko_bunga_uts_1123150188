@@ -33,6 +33,7 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  // Fungsi Login menggunakan Email & Password
   Future<void> _loginEmail() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -46,23 +47,29 @@ class _LoginPageState extends State<LoginPage> {
     _handleLoginResult(ok, auth);
   }
 
+  // Fungsi Login menggunakan Google
   Future<void> _loginGoogle() async {
     final auth = context.read<AuthProvider>();
     final ok = await auth.loginWithGoogle();
+    
     if (!mounted) return;
     _handleLoginResult(ok, auth);
   }
 
+  // Helper untuk menangani hasil navigasi setelah login
   void _handleLoginResult(bool ok, AuthProvider auth) {
     if (ok) {
+      // Jika berhasil dan sudah terverifikasi, masuk ke Dashboard
       Navigator.pushReplacementNamed(context, AppRouter.dashboard);
     } 
     else if (auth.status == AuthStatus.emailNotVerified) {
+      // Jika login berhasil tapi email belum diverifikasi
       Navigator.pushReplacementNamed(context, AppRouter.verifyEmail);
     } else {
+      // Tampilkan error jika gagal
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(auth.errorMessage ?? 'Login gagal'),
+          content: Text(auth.errorMessage ?? 'Login gagal, silakan cek kembali'),
           backgroundColor: Colors.red,
         ),
       );
@@ -71,7 +78,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final authWatch = context.watch<AuthProvider>(); // Panggil polos
+    // Memantau status loading dari AuthProvider
+    final authWatch = context.watch<AuthProvider>();
     final isLoading = authWatch.isLoading;
 
     return LoadingOverlay(
@@ -92,6 +100,8 @@ class _LoginPageState extends State<LoginPage> {
                     subtitle: 'Masuk ke akun Anda untuk melanjutkan',
                   ),
                   const SizedBox(height: 32),
+                  
+                  // Input Email
                   CustomTextField(
                     label: 'Email',
                     hint: 'contoh@email.com',
@@ -105,6 +115,8 @@ class _LoginPageState extends State<LoginPage> {
                     },
                   ),
                   const SizedBox(height: 16),
+                  
+                  // Input Password
                   CustomTextField(
                     label: 'Password',
                     hint: 'Masukkan password',
@@ -118,19 +130,50 @@ class _LoginPageState extends State<LoginPage> {
                     validator: (v) => (v?.isEmpty ?? true) ? 'Password wajib diisi' : null,
                   ),
                   const SizedBox(height: 24),
+                  
+                  // Tombol Login Utama
                   CustomButton(
                     label: 'Masuk',
                     onPressed: _loginEmail,
                     isLoading: isLoading,
                   ),
                   const SizedBox(height: 20),
+                  
                   const DividerWithText(text: 'atau masuk dengan'),
                   const SizedBox(height: 20),
+                  
+                  // Tombol Login Google
                   GoogleSignInButton(
                     onPressed: _loginGoogle,
                     isLoading: isLoading,
                   ),
-                  // ... sisanya (Daftar button) tetap sama
+                  
+                  const SizedBox(height: 32),
+                  
+                  // Navigasi ke Halaman Daftar (Register)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'Belum punya akun? ',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          // Navigasi ke rute Register
+                          Navigator.pushNamed(context, AppRouter.register);
+                        },
+                        child: const Text(
+                          'Daftar Sekarang',
+                          style: TextStyle(
+                            color: Color(0xFF1565C0),
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
