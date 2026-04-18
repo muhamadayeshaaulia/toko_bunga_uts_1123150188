@@ -23,27 +23,29 @@ class AuthProvider extends ChangeNotifier {
   String? _backendToken;
   String? _errorMessage;
 
+  Map<String, dynamic>? _userModel; 
+  Map<String, dynamic>? get userModel => _userModel;
+  bool get isAdmin => _userModel?['role'] == 'admin';
+
   AuthStatus get status => _status;
   User? get firebaseUser => _firebaseUser;
   String? get backendToken => _backendToken;
   String? get errorMessage => _errorMessage;
   bool get isLoading => _status == AuthStatus.loading;
 
-  /// Inisialisasi Auth saat aplikasi pertama kali dibuka (Auto Login)
   Future<void> initializeAuth() async {
     _status = AuthStatus.loading;
-    
     _firebaseUser = _auth.currentUser;
     final savedToken = await SecureStorageService.getToken();
 
     if (_firebaseUser != null && savedToken != null) {
-      // Wajib reload untuk memastikan status verifikasi email terbaru
       await _firebaseUser?.reload();
       _firebaseUser = _auth.currentUser;
 
       if (_firebaseUser!.emailVerified) {
         _backendToken = savedToken;
-        _status = AuthStatus.authenticated;
+        // Ambil data profile dari backend biar userModel terisi
+        await _verifyTokenToBackend();
       } else {
         _status = AuthStatus.emailNotVerified;
       }
@@ -88,11 +90,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Login Email & Password
-  Future<bool> loginWithEmail({
-    required String email,
-    required String password,
-  }) async {
+  Future<bool> loginWithEmail({required String email, required String password}) async {
     _setLoading();
     try {
       final credential = await _auth.signInWithEmailAndPassword(
@@ -100,8 +98,6 @@ class AuthProvider extends ChangeNotifier {
         password: password,
       );
       _firebaseUser = credential.user;
-
-      // PENTING: Reload user untuk sinkronisasi status emailVerified
       await _firebaseUser?.reload();
       _firebaseUser = _auth.currentUser;
 
@@ -118,7 +114,6 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Login Menggunakan Google
   Future<bool> loginWithGoogle() async {
     _setLoading();
     try {
@@ -146,10 +141,8 @@ class AuthProvider extends ChangeNotifier {
 
   Future<bool> _verifyTokenToBackend() async {
     try {
-
       final firebaseToken = await _firebaseUser?.getIdToken(true); 
-
-      print("DEBUG: Mengirim token baru ke backend...");
+      print("DEBUG: Mengirim token ke backend...");
 
       final response = await DioClient.instance.post(
         ApiConstants.verifyToken,
@@ -157,8 +150,11 @@ class AuthProvider extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final data = response.data['data'] as Map<String, dynamic>;
-        _backendToken = data['access_token'] as String;
+        final responseData = response.data['data'] as Map<String, dynamic>;
+        
+        _backendToken = responseData['access_token'] as String;
+
+        _userModel = responseData['user'] as Map<String, dynamic>;
 
         await SecureStorageService.saveToken(_backendToken!);
 
@@ -174,27 +170,20 @@ class AuthProvider extends ChangeNotifier {
       return false;
     }
   }
-Future<bool> checkEmailVerified() async {
-  try {
-    await _auth.currentUser?.reload();
-    _firebaseUser = _auth.currentUser;
 
-    if (_firebaseUser?.emailVerified ?? false) {
+  Future<bool> checkEmailVerified() async {
+    try {
+      await _auth.currentUser?.reload();
+      _firebaseUser = _auth.currentUser;
 
-      final isBackendVerified = await _verifyTokenToBackend();
-      
-      if (isBackendVerified) {
-        _status = AuthStatus.authenticated;
-        _errorMessage = null;
-        notifyListeners();
-        return true; 
+      if (_firebaseUser?.emailVerified ?? false) {
+        return await _verifyTokenToBackend();
       }
+    } catch (e) {
+      debugPrint("Gagal polling email: $e");
     }
-  } catch (e) {
-    debugPrint("Gagal polling email: $e");
+    return false;
   }
-  return false;
-}
 
   Future<void> resendVerificationEmail() async {
     await _firebaseUser?.sendEmailVerification();
@@ -206,6 +195,7 @@ Future<bool> checkEmailVerified() async {
     await SecureStorageService.clearAll();
     _firebaseUser = null;
     _backendToken = null;
+    _userModel = null; 
     _status = AuthStatus.unauthenticated;
     notifyListeners();
   }

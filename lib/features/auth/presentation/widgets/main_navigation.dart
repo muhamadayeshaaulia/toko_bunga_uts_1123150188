@@ -14,7 +14,6 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int _currentIndex = 0;
 
-  // Daftar halaman yang akan tampil di navigasi
   final List<Widget> _pages = [
     const HomePage(),
     const CartPage(),
@@ -37,7 +36,7 @@ class _MainNavigationState extends State<MainNavigation> {
             _currentIndex = index;
           });
         },
-        type: BottomNavigationBarType.fixed, // Menampilkan semua label dan ikon
+        type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.blueAccent,
         unselectedItemColor: Colors.grey,
         showUnselectedLabels: true,
