@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../features/auth/presentation/providers/auth_provider.dart';
-import '../../dashboard/data/model/product_model.dart' hide AuthProvider;
+import '../../dashboard/presentation/providers/cart_provider.dart';
 import '../../dashboard/presentation/providers/product_provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -144,6 +144,45 @@ class _HomePageState extends State<HomePage> {
                                 child: Text(
                                   p.category,
                                   style: const TextStyle(fontSize: 10, color: Colors.blue),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    // --- DEBUG LOG: INI BAGIAN PALING PENTING ---
+                                    debugPrint("=== PROSES TAMBAH KERANJANG ===");
+                                    debugPrint("Produk: ${p.name}");
+                                    debugPrint("ID Produk yang dikirim: ${p.id}");
+
+                                    if (p.id == 0) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Error: ID Produk 0. Cek ProductModel!'),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                      return;
+                                    }
+
+                                    context.read<CartProvider>().addToCart(p.id);
+                                    
+                                    // Kasih feedback ke user
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('${p.name} masuk keranjang!'),
+                                        backgroundColor: Colors.green,
+                                        duration: const Duration(seconds: 1),
+                                      ),
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blueAccent,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                    padding: const EdgeInsets.symmetric(vertical: 4),
+                                  ),
+                                  child: const Text('Beli', style: TextStyle(color: Colors.white, fontSize: 12)),
                                 ),
                               ),
                             ],

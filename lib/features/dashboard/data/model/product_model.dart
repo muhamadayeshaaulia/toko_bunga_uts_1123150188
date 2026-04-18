@@ -26,7 +26,7 @@ class ProductModel {
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
     return ProductModel(
-      id: json['id'] ?? 0,
+      id: json['id'] ?? json['ID'] ?? json['product_id'] ?? 0,
       name: json['name'] ?? '',
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       category: json['category'] ?? '',
@@ -66,15 +66,14 @@ class AuthProvider extends ChangeNotifier {
   User? _firebaseUser;
   String? _backendToken;
   String? _errorMessage;
-  
-  // Variabel baru untuk menyimpan data profil dari MySQL (Termasuk ROLE)
+
   Map<String, dynamic>? _userModel;
 
   AuthStatus get status => _status;
   User? get firebaseUser => _firebaseUser;
   String? get backendToken => _backendToken;
   String? get errorMessage => _errorMessage;
-  Map<String, dynamic>? get userModel => _userModel; // Getter untuk cek Role
+  Map<String, dynamic>? get userModel => _userModel;
   bool get isLoading => _status == AuthStatus.loading;
 
   // Helper untuk cek apakah admin
