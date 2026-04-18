@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/routes/app_router.dart';
-import '../providers/auth_provider.dart' as auth_provider;
-import '../providers/auth_provider.dart';
+// Gunakan SATU import saja dengan alias agar tidak error/merah
+import '../providers/auth_provider.dart' as gap; 
+
 import '../widgets/auth_header.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
@@ -16,18 +17,15 @@ import '../widgets/loading_overlay.dart';
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
-
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
-
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
   bool _showPass = false;
-
 
   @override
   void dispose() {
@@ -36,38 +34,33 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-
-  /// Handler untuk login email/password
   Future<void> _loginEmail() async {
     if (!_formKey.currentState!.validate()) return;
 
-
-    final auth = context.read<auth_provider.AuthProvider>();
+    // Gunakan alias 'gap'
+    final auth = context.read<gap.AuthProvider>();
     final ok = await auth.loginWithEmail(
       email: _emailCtrl.text.trim(),
       password: _passCtrl.text,
     );
 
-
     if (!mounted) return;
     _handleLoginResult(ok, auth);
   }
 
-
-  /// Handler untuk login Google
   Future<void> _loginGoogle() async {
-    final auth = context.read<auth_provider.AuthProvider>();
+    final auth = context.read<gap.AuthProvider>();
     final ok = await auth.loginWithGoogle();
     if (!mounted) return;
     _handleLoginResult(ok, auth);
   }
 
-
-  /// Routing berdasarkan hasil login
-  void _handleLoginResult(bool ok, auth_provider.AuthProvider auth) {
+  void _handleLoginResult(bool ok, gap.AuthProvider auth) {
     if (ok) {
       Navigator.pushReplacementNamed(context, AppRouter.dashboard);
-    } else if (auth.status == AuthStatus.emailNotVerified) {
+    } 
+    // Gunakan gap.AuthStatus
+    else if (auth.status == gap.AuthStatus.emailNotVerified) {
       Navigator.pushReplacementNamed(context, AppRouter.verifyEmail);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -78,7 +71,6 @@ class _LoginPageState extends State<LoginPage> {
       );
     }
   }
-
 
   void _showForgotPasswordDialog(BuildContext context) {
     final ctrl = TextEditingController();
@@ -111,11 +103,11 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
-    final isLoading = context.watch<AuthProvider>().isLoading;
-
+    // Gunakan gap.AuthProvider
+    final authWatch = context.watch<gap.AuthProvider>();
+    final isLoading = authWatch.isLoading;
 
     return LoadingOverlay(
       isLoading: isLoading,
@@ -149,7 +141,7 @@ class _LoginPageState extends State<LoginPage> {
                       return null;
                     },
                   ),
-                   const SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   CustomTextField(
                     label: 'Password',
                     hint: 'Masukkan password',
@@ -160,11 +152,9 @@ class _LoginPageState extends State<LoginPage> {
                       icon: Icon(
                         _showPass ? Icons.visibility_off : Icons.visibility,
                       ),
-                      onPressed: () =>
-                          setState(() => _showPass = !_showPass),
+                      onPressed: () => setState(() => _showPass = !_showPass),
                     ),
-                    validator: (v) =>
-                        (v?.isEmpty ?? true) ? 'Password wajib diisi' : null,
+                    validator: (v) => (v?.isEmpty ?? true) ? 'Password wajib diisi' : null,
                   ),
                   const SizedBox(height: 8),
                   Align(
@@ -216,4 +206,3 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-
