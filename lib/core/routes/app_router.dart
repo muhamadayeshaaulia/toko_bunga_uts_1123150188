@@ -4,9 +4,8 @@ import 'package:uts_1123150188_semester6/features/auth/presentation/pages/Regist
 import 'package:uts_1123150188_semester6/features/auth/presentation/pages/login_page.dart';
 import 'package:uts_1123150188_semester6/features/auth/presentation/pages/verify_email_page.dart';
 import 'package:uts_1123150188_semester6/features/dashboard/presentation/pages/dashboard_page.dart';
-import '../../features/auth/presentation/providers/auth_provider.dart';
 import '../../features/dashboard/presentation/pages/splash_page.dart';
-
+import '../../features/auth/presentation/providers/auth_provider.dart' as gap;
 
 class AuthGuard extends StatelessWidget {
   final Widget child;
@@ -15,12 +14,17 @@ class AuthGuard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final status = context.watch<AuthProvider>().status;
+    // Gunakan alias gap.AuthProvider
+    final auth = context.watch<gap.AuthProvider>();
+    final status = auth.status;
  
     return switch (status) {
-      AuthStatus.authenticated    => child,                   // Lanjut
-      AuthStatus.emailNotVerified => const VerifyEmailPage(), // Redirect
-      _                           => const LoginPage(),       // Redirect login
+      gap.AuthStatus.authenticated    => child,
+      gap.AuthStatus.emailNotVerified => const VerifyEmailPage(),
+      gap.AuthStatus.loading || gap.AuthStatus.initial => const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      ),
+      _ => const LoginPage(),
     };
   }
 }
@@ -32,13 +36,11 @@ class AppRouter {
   static const String verifyEmail = '/verify-email';
   static const String dashboard   = '/dashboard';
 
-
   static Map<String, WidgetBuilder> get routes => {
     splash:      (_) => const SplashPage(),
     login:       (_) => const LoginPage(),
     register:    (_) => const RegisterPage(),
     verifyEmail: (_) => const VerifyEmailPage(),
     dashboard:   (_) => const AuthGuard(child: DashboardPage()),
-
   };
 }
