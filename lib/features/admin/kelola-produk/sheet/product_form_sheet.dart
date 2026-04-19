@@ -86,7 +86,7 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  isEdit ? 'Edit Produk 716' : 'Tambah Produk Baru',
+                  isEdit ? 'Edit Produk' : 'Tambah Produk Baru',
                   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 IconButton(
