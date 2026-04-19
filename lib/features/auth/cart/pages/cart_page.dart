@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../dashboard/presentation/providers/cart_provider.dart';
+import '../../../../core/services/notification_service.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -13,13 +14,11 @@ class _CartPageState extends State<CartPage> {
   @override
   void initState() {
     super.initState();
-    // Memastikan data ditarik saat pertama kali masuk halaman
     Future.microtask(() => context.read<CartProvider>().fetchCart());
   }
 
   @override
   Widget build(BuildContext context) {
-    // context.watch akan mendengarkan setiap kali notifyListeners() di provider dipanggil
     final cartProvider = context.watch<CartProvider>();
     final cartItems = cartProvider.cartItems;
 
@@ -54,7 +53,6 @@ class _CartPageState extends State<CartPage> {
                           padding: const EdgeInsets.all(12.0),
                           child: Row(
                             children: [
-                              // Foto Produk
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
                                 child: Image.network(
@@ -67,7 +65,6 @@ class _CartPageState extends State<CartPage> {
                                 ),
                               ),
                               const SizedBox(width: 16),
-                              // Info Produk
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,14 +79,27 @@ class _CartPageState extends State<CartPage> {
                               Row(
                                 children: [
                                   IconButton(
-                                    icon: const Icon(Icons.remove_circle_outline, color: Colors.redAccent),
-                                    onPressed: () => cartProvider.decreaseQuantity(item.productId),
-                                  ),
+                                  icon: const Icon(Icons.remove_circle_outline, color: Colors.redAccent),
+                                  onPressed: () async {
+                                    await cartProvider.decreaseQuantity(item.productId);
+
+                                    NotificationService.showNotification(
+                                      title: "Keranjang Dikurangi ➖",
+                                      body: "Jumlah ${product?.name} diperbarui.",
+                                    );
+                                  },
+                                ),
                                   Text('${item.quantity}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                                   IconButton(
-                                    icon: const Icon(Icons.add_circle_outline, color: Colors.blueAccent),
-                                    onPressed: () => cartProvider.addToCart(item.productId),
-                                  ),
+                                  icon: const Icon(Icons.add_circle_outline, color: Colors.blueAccent),
+                                  onPressed: () async {
+                                    await cartProvider.addToCart(item.productId);
+                                    NotificationService.showNotification(
+                                      title: "Keranjang Ditambah ➕",
+                                      body: "${product?.name} berhasil ditambah!",
+                                    );
+                                  },
+                                ),
                                 ],
                               )
                             ],
@@ -99,7 +109,6 @@ class _CartPageState extends State<CartPage> {
                     },
                   ),
                 ),
-                // Footer Total & Checkout
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: const BoxDecoration(
@@ -122,7 +131,10 @@ class _CartPageState extends State<CartPage> {
                         width: double.infinity, height: 50,
                         child: ElevatedButton(
                           onPressed: cartItems.isEmpty ? null : () {
-                            // Logic Checkout
+                            NotificationService.showNotification(
+                              title: "Checkout Berhasil ✅",
+                              body: "Pesanan kamu sedang diproses.",
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blueAccent,
