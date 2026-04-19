@@ -84,8 +84,8 @@ class _CartPageState extends State<CartPage> {
                                     await cartProvider.decreaseQuantity(item.productId);
 
                                     NotificationService.showNotification(
-                                      title: "Keranjang Dikurangi ➖",
-                                      body: "Jumlah ${product?.name} diperbarui.",
+                                      title: "716_Production",
+                                      body: "yahhh kok Jumlah ${product?.name} di keranjang berkurang.",
                                     );
                                   },
                                 ),
@@ -95,8 +95,8 @@ class _CartPageState extends State<CartPage> {
                                   onPressed: () async {
                                     await cartProvider.addToCart(item.productId);
                                     NotificationService.showNotification(
-                                      title: "Keranjang Ditambah ➕",
-                                      body: "${product?.name} berhasil ditambah!",
+                                      title: "716_Production",
+                                      body: "Yeyyy ${product?.name} berhasil ditambah!",
                                     );
                                   },
                                 ),
