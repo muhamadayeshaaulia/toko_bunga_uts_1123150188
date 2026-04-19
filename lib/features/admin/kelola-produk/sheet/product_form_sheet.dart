@@ -30,7 +30,7 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
       _nameController.text = widget.product!.name;
       _priceController.text = widget.product!.price.toStringAsFixed(0);
       _stockController.text = widget.product!.stock.toString();
-      _descriptionController.text = widget.product!.description;
+      _descriptionController.text = widget.product!.description!;
     }
   }
 
