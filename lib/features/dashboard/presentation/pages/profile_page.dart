@@ -8,15 +8,13 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Mengambil data dari AuthProvider
     final auth = context.watch<AuthProvider>();
     final userFirebase = auth.firebaseUser;
     final userBackend = auth.userModel;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profil Pengguna', 
-          style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Profil Pengguna', style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
@@ -26,7 +24,7 @@ class ProfilePage extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(height: 20),
-            // 1. Header Profil (Foto & Nama)
+            // Header Profil
             Center(
               child: Column(
                 children: [
@@ -50,7 +48,6 @@ class ProfilePage extends StatelessWidget {
                     style: const TextStyle(color: Colors.grey),
                   ),
                   const SizedBox(height: 8),
-                  // Label Role (Admin/User)
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
@@ -71,11 +68,25 @@ class ProfilePage extends StatelessWidget {
             ),
             const SizedBox(height: 30),
 
-            // 2. Menu Pilihan
+            // Menu Pilihan
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: [
+                  if (auth.isAdmin) ...[
+                    _buildProfileMenu(
+                      icon: Icons.inventory_2_outlined,
+                      title: 'Kelola Produk (Admin Only)',
+                      color: Colors.redAccent, 
+                      onTap: () {
+
+                        debugPrint("Pindah ke halaman Kelola Produk");
+   
+                      },
+                    ),
+                    const Divider(),
+                  ],
+                  
                   _buildProfileMenu(
                     icon: Icons.settings_outlined,
                     title: 'Pengaturan Akun',
@@ -122,15 +133,16 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // Helper Widget untuk menu item
+  // Helper Widget dengan tambahan parameter color
   Widget _buildProfileMenu({
     required IconData icon, 
     required String title, 
-    required VoidCallback onTap
+    required VoidCallback onTap,
+    Color color = Colors.blueAccent, 
   }) {
     return ListTile(
-      leading: Icon(icon, color: Colors.blueAccent),
-      title: Text(title, style: const TextStyle(fontSize: 14)),
+      leading: Icon(icon, color: color),
+      title: Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
       trailing: const Icon(Icons.chevron_right, size: 20),
       onTap: onTap,
     );
