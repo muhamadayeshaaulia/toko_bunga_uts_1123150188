@@ -9,8 +9,10 @@ class CheckoutPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Gunakan watch agar data sinkron
     final cartProvider = context.watch<CartProvider>();
     final authProvider = context.watch<AuthProvider>();
+    
     final cartItems = cartProvider.cartItems;
     final userName = authProvider.userModel?['name'] ?? 'Nafisah';
 
@@ -21,6 +23,7 @@ class CheckoutPage extends StatelessWidget {
       ),
       body: Column(
         children: [
+          // Bagian Daftar Barang
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
@@ -43,7 +46,7 @@ class CheckoutPage extends StatelessWidget {
             ),
           ),
           
-          // Ringkasan Pembayaran
+          // Bagian Total & Tombol Bayar
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
@@ -66,23 +69,28 @@ class CheckoutPage extends StatelessWidget {
                   width: double.infinity,
                   height: 55,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: cartItems.isEmpty ? null : () async {
+                      // Ini akan memanggil endpoint DELETE /cart di Golang
+                      await context.read<CartProvider>().clearCartInDatabase();
+
+                      // 2. Munculkan Notifikasi Pop-up (Kayak WA)
                       NotificationService.showNotification(
                         title: "716_Production",
                         body: "Yey $userName, Pembayaran Berhasil! Barang sedang disiapkan toko ya!",
                       );
 
-                      context.read<CartProvider>().clearCartAfterCheckout();
-
-                      Navigator.of(context).pushNamedAndRemoveUntil('/dashboard', (route) => false);
+                      // Semua halaman di belakang (Cart/Checkout) akan dihapus dari memori
+                      if (context.mounted) {
+                        Navigator.of(context).pushNamedAndRemoveUntil('/dashboard', (route) => false);
+                      }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: Colors.green, // Warna sukses
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     child: const Text(
                       'BAYAR SEKARANG',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                   ),
                 ),

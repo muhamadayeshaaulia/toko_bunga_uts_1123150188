@@ -52,7 +52,7 @@ class InfoPage extends StatelessWidget {
               child: Padding(
                 padding: EdgeInsets.all(16),
                 child: Text(
-                  'Aplikasi ini dibuat untuk memenuhi tugas UAS Technopreneurship 1. '
+                  'Aplikasi ini dibuat untuk memenuhi UTS Pemerograman Mobile Lanjutan. '
                   'Sistem ini mengintegrasikan Flutter sebagai frontend, Firebase untuk autentikasi, '
                   'dan Golang sebagai backend untuk manajemen produk.',
                   textAlign: TextAlign.center,
