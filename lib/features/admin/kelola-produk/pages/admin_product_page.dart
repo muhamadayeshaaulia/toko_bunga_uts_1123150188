@@ -15,11 +15,9 @@ class _AdminProductPageState extends State<AdminProductPage> {
   @override
   void initState() {
     super.initState();
-    // Refresh data saat masuk halaman
     Future.microtask(() => context.read<ProductProvider>().fetchProducts());
   }
 
-  // FUNGSI UTAMA UNTUK MEMANGGIL FORM (TAMBAH/EDIT)
   void _showProductForm(BuildContext context, {ProductModel? product}) {
     showModalBottomSheet(
       context: context,
@@ -62,32 +60,72 @@ class _AdminProductPageState extends State<AdminProductPage> {
                       elevation: 2,
                       margin: const EdgeInsets.only(bottom: 12),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.all(12),
-                        leading: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            p.imageUrl,
-                            width: 60, height: 60, fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                          leading: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              p.imageUrl,
+                              width: 60, height: 60, fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, size: 40),
+                            ),
                           ),
-                        ),
-                        title: Text(p.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Text('Rp ${p.price.toStringAsFixed(0)} | Stok: ${p.stock}'),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // TOMBOL EDIT
-                            IconButton(
-                              icon: const Icon(Icons.edit_note_rounded, color: Colors.blue),
-                              onPressed: () => _showProductForm(context, product: p), 
-                            ),
-                            // TOMBOL HAPUS
-                            IconButton(
-                              icon: const Icon(Icons.delete_outline_rounded, color: Colors.red),
-                              onPressed: () => _confirmDelete(context, p.name),
-                            ),
-                          ],
+                          title: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // LABEL KATEGORI (Badge)
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.redAccent.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  p.category.toUpperCase(),
+                                  style: const TextStyle(
+                                    fontSize: 10, 
+                                    fontWeight: FontWeight.bold, 
+                                    color: Colors.redAccent
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(p.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                            ],
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 4),
+                              Text(
+                                'Rp ${p.price.toStringAsFixed(0)} • Stok: ${p.stock}',
+                                style: TextStyle(color: Colors.grey.shade800, fontWeight: FontWeight.w500),
+                              ),
+                              const SizedBox(height: 4),
+                              // DESKRIPSI
+                              Text(
+                                p.description ?? "Tidak ada deskripsi",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(fontSize: 12, color: Colors.grey.shade600, fontStyle: FontStyle.italic),
+                              ),
+                            ],
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.edit_note_rounded, color: Colors.blue),
+                                onPressed: () => _showProductForm(context, product: p), 
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete_outline_rounded, color: Colors.red),
+                                onPressed: () => _confirmDelete(context, p.id, p.name),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );
@@ -96,16 +134,25 @@ class _AdminProductPageState extends State<AdminProductPage> {
     );
   }
 
-  void _confirmDelete(BuildContext context, String productName) {
+  // DIALOG HAPUS Sekarang panggil deleteProduct di Provider
+  void _confirmDelete(BuildContext context, int id, String productName) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Hapus Produk?'),
-        content: Text('Apakah kamu yakin ingin menghapus "$productName"?'),
+        content: Text('Apakah kamu yakin ingin menghapus "$productName" dari 716 Production?'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
           TextButton(
-            onPressed: () => Navigator.pop(context), 
+            onPressed: () async {
+              final success = await context.read<ProductProvider>().deleteProduct(id);
+              if (success && context.mounted) {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("$productName berhasil dihapus")),
+                );
+              }
+            }, 
             child: const Text('Hapus', style: TextStyle(color: Colors.red))
           ),
         ],
