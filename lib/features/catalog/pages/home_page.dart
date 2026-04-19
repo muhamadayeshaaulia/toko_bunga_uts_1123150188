@@ -27,10 +27,10 @@ class _HomePageState extends State<HomePage> {
     final productProvider = context.watch<ProductProvider>();
     final products = productProvider.products;
 
-    // Ambil nama user untuk notifikasi
     final userName = auth.userModel?['name'] ?? auth.firebaseUser?.displayName ?? 'Pengguna';
 
     return Scaffold(
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.all(16),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  childAspectRatio: 0.7,
+                  childAspectRatio: 0.6, 
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
                 ),
@@ -84,55 +84,90 @@ class _HomePageState extends State<HomePage> {
                   final p = products[i];
                   return Card(
                     elevation: 3,
+                    margin: EdgeInsets.zero,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
-                            child: Image.network(
-                              p.imageUrl,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(p.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                              Text('Rp ${p.price.toStringAsFixed(0)}', 
-                                style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.w800)),
-                              const SizedBox(height: 8),
-                              SizedBox(
+                        Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+                              child: Image.network(
+                                p.imageUrl,
+                                height: 130,
                                 width: double.infinity,
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    // Tambah ke Keranjang lewat API
-                                    await context.read<CartProvider>().addToCart(p.id);
-                                    NotificationService.showNotification(
-                                      title: "716_Production",
-                                      body: "Yey $userName, ${p.name} sudah masuk keranjang!",
-                                    );
-
-                                    // Snackbar Feedback (Opsional)
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('${p.name} masuk keranjang!'),
-                                        backgroundColor: Colors.green,
-                                        duration: const Duration(seconds: 1),
-                                      ),
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
-                                  child: const Text('Beli', style: TextStyle(color: Colors.white, fontSize: 12)),
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => Container(
+                                  height: 130,
+                                  color: Colors.grey.shade200,
+                                  child: const Icon(Icons.broken_image, color: Colors.grey),
                                 ),
                               ),
-                            ],
+                            ),
+                            Positioned(
+                              top: 8,
+                              left: 8,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.6),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  p.category,
+                                  style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        // Konten Teks
+                        Expanded( 
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      p.name, 
+                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Rp ${p.price.toStringAsFixed(0)}', 
+                                      style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.w800, fontSize: 13),
+                                    ),
+                                  ],
+                                ),
+                                // Tombol Beli
+                                SizedBox(
+                                  width: double.infinity,
+                                  height: 35, // Batasi tinggi tombol
+                                  child: ElevatedButton(
+                                    onPressed: () async {
+                                      await context.read<CartProvider>().addToCart(p.id);
+                                      NotificationService.showNotification(
+                                        title: "716_Production",
+                                        body: "Yey $userName, ${p.name} sudah masuk keranjang!",
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.blueAccent,
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                      padding: EdgeInsets.zero,
+                                    ),
+                                    child: const Text('Beli', style: TextStyle(color: Colors.white, fontSize: 12)),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
