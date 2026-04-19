@@ -67,7 +67,7 @@ class InfoPage extends StatelessWidget {
             const ListTile(
               leading: Icon(Icons.person_outline, color: Colors.blueAccent),
               title: Text('Pengembang'),
-              subtitle: Text('Muhamad Ayesha Aulia'),
+              subtitle: Text('Muhamad Ayesha Aulia - 1123150188'),
             ),
             const ListTile(
               leading: Icon(Icons.school_outlined, color: Colors.blueAccent),
@@ -82,7 +82,7 @@ class InfoPage extends StatelessWidget {
             
             const SizedBox(height: 40),
             const Text(
-              '© 2026 Technopreneurship Project',
+              '© 2026 716_Production. All rights reserved.',
               style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],
