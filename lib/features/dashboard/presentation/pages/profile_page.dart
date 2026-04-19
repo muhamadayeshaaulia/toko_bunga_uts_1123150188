@@ -76,7 +76,7 @@ class ProfilePage extends StatelessWidget {
                   if (auth.isAdmin) ...[
                     _buildProfileMenu(
                       icon: Icons.inventory_2_outlined,
-                      title: 'Kelola Produk (Admin Only)',
+                      title: 'Kelola Produk',
                       color: Colors.redAccent, 
                       onTap: () {
 
