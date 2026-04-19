@@ -114,10 +114,8 @@ class _HomePageState extends State<HomePage> {
                                   onPressed: () async {
                                     // Tambah ke Keranjang lewat API
                                     await context.read<CartProvider>().addToCart(p.id);
-                                    
-                                    // MUNCULKAN NOTIFIKASI POP-UP (Kaya WA)
                                     NotificationService.showNotification(
-                                      title: "Berhasil Tambah Keranjang 🛒",
+                                      title: "716_Production",
                                       body: "Yey $userName, ${p.name} sudah masuk keranjang!",
                                     );
 
