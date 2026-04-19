@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../dashboard/presentation/providers/cart_provider.dart';
-import '../../../../core/services/notification_service.dart';
-import '../../../../features/auth/presentation/providers/auth_provider.dart'; // Tambahkan import ini
+import '../../dashboard/presentation/providers/cart_provider.dart';
+import '../../../core/services/notification_service.dart';
+import '../../auth/presentation/providers/auth_provider.dart'; // Tambahkan import ini
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
