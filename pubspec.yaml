@@ -41,6 +41,7 @@ dependencies:
   image_picker: ^1.0.7
   dio: ^5.9.2
   flutter_secure_storage: ^10.0.0
+  flutter_local_notifications: ^17.0.0
   equatable: ^2.0.8
   email_validator: ^3.0.0
   flutter_svg: ^2.2.4
