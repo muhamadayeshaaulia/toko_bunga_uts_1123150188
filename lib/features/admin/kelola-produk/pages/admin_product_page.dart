@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../dashboard/data/model/product_model.dart';
 import '../../../dashboard/presentation/providers/product_provider.dart';
+import '../sheet/product_form_sheet.dart';
 
 class AdminProductPage extends StatefulWidget {
   const AdminProductPage({super.key});
@@ -13,8 +15,21 @@ class _AdminProductPageState extends State<AdminProductPage> {
   @override
   void initState() {
     super.initState();
-    // Refresh data produk saat halaman dibuka
+    // Refresh data saat masuk halaman
     Future.microtask(() => context.read<ProductProvider>().fetchProducts());
+  }
+
+  // FUNGSI UTAMA UNTUK MEMANGGIL FORM (TAMBAH/EDIT)
+  void _showProductForm(BuildContext context, {ProductModel? product}) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+      ),
+      builder: (context) => ProductFormSheet(product: product),
+    );
   }
 
   @override
@@ -29,10 +44,8 @@ class _AdminProductPageState extends State<AdminProductPage> {
         foregroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add_box_rounded),
-            onPressed: () {
-              _showAddProductDialog(context);
-            },
+            icon: const Icon(Icons.add_box_rounded, size: 28),
+            onPressed: () => _showProductForm(context), 
           )
         ],
       ),
@@ -50,37 +63,29 @@ class _AdminProductPageState extends State<AdminProductPage> {
                       margin: const EdgeInsets.only(bottom: 12),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       child: ListTile(
-                        contentPadding: const EdgeInsets.all(10),
+                        contentPadding: const EdgeInsets.all(12),
                         leading: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: Image.network(
                             p.imageUrl,
                             width: 60, height: 60, fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported),
+                            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
                           ),
                         ),
                         title: Text(p.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Rp ${p.price.toStringAsFixed(0)}'),
-                            Text('Stok: ${p.stock}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                          ],
-                        ),
+                        subtitle: Text('Rp ${p.price.toStringAsFixed(0)} | Stok: ${p.stock}'),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
+                            // TOMBOL EDIT
                             IconButton(
                               icon: const Icon(Icons.edit_note_rounded, color: Colors.blue),
-                              onPressed: () {
-                                debugPrint("Edit produk: ${p.id}");
-                              },
+                              onPressed: () => _showProductForm(context, product: p), 
                             ),
+                            // TOMBOL HAPUS
                             IconButton(
                               icon: const Icon(Icons.delete_outline_rounded, color: Colors.red),
-                              onPressed: () {
-                                _confirmDelete(context, p.name);
-                              },
+                              onPressed: () => _confirmDelete(context, p.name),
                             ),
                           ],
                         ),
@@ -91,13 +96,12 @@ class _AdminProductPageState extends State<AdminProductPage> {
     );
   }
 
-  // Dialog Konfirmasi Hapus
   void _confirmDelete(BuildContext context, String productName) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Hapus Produk?'),
-        content: Text('Apakah kamu yakin ingin menghapus "$productName" dari 716 Production?'),
+        content: Text('Apakah kamu yakin ingin menghapus "$productName"?'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
           TextButton(
@@ -105,36 +109,6 @@ class _AdminProductPageState extends State<AdminProductPage> {
             child: const Text('Hapus', style: TextStyle(color: Colors.red))
           ),
         ],
-      ),
-    );
-  }
-
-  // Dialog Tambah Produk
-  void _showAddProductDialog(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-          top: 20, left: 20, right: 20
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Tambah Produk Baru', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const TextField(decoration: InputDecoration(labelText: 'Nama Produk')),
-            const TextField(decoration: InputDecoration(labelText: 'Harga'), keyboardType: TextInputType.number),
-            const TextField(decoration: InputDecoration(labelText: 'URL Gambar')),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, minimumSize: const Size(double.infinity, 50)),
-              child: const Text('Simpan Produk', style: TextStyle(color: Colors.white)),
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
       ),
     );
   }
