@@ -70,14 +70,12 @@ class _AdminProductPageState extends State<AdminProductPage> {
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            // Tombol Edit
                             IconButton(
                               icon: const Icon(Icons.edit_note_rounded, color: Colors.blue),
                               onPressed: () {
                                 debugPrint("Edit produk: ${p.id}");
                               },
                             ),
-                            // Tombol Hapus
                             IconButton(
                               icon: const Icon(Icons.delete_outline_rounded, color: Colors.red),
                               onPressed: () {
