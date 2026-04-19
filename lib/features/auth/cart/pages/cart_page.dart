@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../dashboard/presentation/providers/cart_provider.dart';
 import '../../../../core/services/notification_service.dart';
+import '../../../../features/auth/presentation/providers/auth_provider.dart'; // Tambahkan import ini
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -19,8 +20,14 @@ class _CartPageState extends State<CartPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Ambil data dari provider
     final cartProvider = context.watch<CartProvider>();
+    final authProvider = context.watch<AuthProvider>();
+    
     final cartItems = cartProvider.cartItems;
+    
+    // Ambil nama user untuk notifikasi yang lebih personal
+    final userName = authProvider.userModel?['name'] ?? authProvider.firebaseUser?.displayName ?? 'Nafisah';
 
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
@@ -79,27 +86,30 @@ class _CartPageState extends State<CartPage> {
                               Row(
                                 children: [
                                   IconButton(
-                                  icon: const Icon(Icons.remove_circle_outline, color: Colors.redAccent),
-                                  onPressed: () async {
-                                    await cartProvider.decreaseQuantity(item.productId);
+                                    icon: const Icon(Icons.remove_circle_outline, color: Colors.redAccent),
+                                    onPressed: () async {
+                                      await cartProvider.decreaseQuantity(item.productId);
 
-                                    NotificationService.showNotification(
-                                      title: "716_Production",
-                                      body: "yahhh kok Jumlah ${product?.name} di keranjang berkurang.",
-                                    );
-                                  },
-                                ),
+                                      // Notifikasi dengan nama user
+                                      NotificationService.showNotification(
+                                        title: "716_Production",
+                                        body: "Yahhh $userName, jumlah ${product?.name} dikurangi nih.",
+                                      );
+                                    },
+                                  ),
                                   Text('${item.quantity}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                                   IconButton(
-                                  icon: const Icon(Icons.add_circle_outline, color: Colors.blueAccent),
-                                  onPressed: () async {
-                                    await cartProvider.addToCart(item.productId);
-                                    NotificationService.showNotification(
-                                      title: "716_Production",
-                                      body: "Yeyyy ${product?.name} berhasil ditambah!",
-                                    );
-                                  },
-                                ),
+                                    icon: const Icon(Icons.add_circle_outline, color: Colors.blueAccent),
+                                    onPressed: () async {
+                                      await cartProvider.addToCart(item.productId);
+                                      
+                                      // Notifikasi dengan nama user
+                                      NotificationService.showNotification(
+                                        title: "716_Production",
+                                        body: "Yeyyy $userName, ${product?.name} berhasil ditambah!",
+                                      );
+                                    },
+                                  ),
                                 ],
                               )
                             ],
@@ -133,7 +143,7 @@ class _CartPageState extends State<CartPage> {
                           onPressed: cartItems.isEmpty ? null : () {
                             NotificationService.showNotification(
                               title: "Checkout Berhasil ✅",
-                              body: "Pesanan kamu sedang diproses.",
+                              body: "Tenang $userName, pesanan kamu sedang diproses 716_Production!",
                             );
                           },
                           style: ElevatedButton.styleFrom(

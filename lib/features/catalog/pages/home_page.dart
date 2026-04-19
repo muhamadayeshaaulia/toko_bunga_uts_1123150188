@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../../features/auth/presentation/providers/auth_provider.dart';
 import '../../dashboard/presentation/providers/cart_provider.dart';
 import '../../dashboard/presentation/providers/product_provider.dart';
-import '../../../../core/services/notification_service.dart'; // IMPORT INI
+import '../../../../core/services/notification_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -112,16 +112,16 @@ class _HomePageState extends State<HomePage> {
                                 width: double.infinity,
                                 child: ElevatedButton(
                                   onPressed: () async {
-                                    // 1. Tambah ke Keranjang lewat API
+                                    // Tambah ke Keranjang lewat API
                                     await context.read<CartProvider>().addToCart(p.id);
                                     
-                                    // 2. MUNCULKAN NOTIFIKASI POP-UP (Kaya WA)
+                                    // MUNCULKAN NOTIFIKASI POP-UP (Kaya WA)
                                     NotificationService.showNotification(
                                       title: "Berhasil Tambah Keranjang 🛒",
                                       body: "Yey $userName, ${p.name} sudah masuk keranjang!",
                                     );
 
-                                    // 3. Snackbar Feedback (Opsional)
+                                    // Snackbar Feedback (Opsional)
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text('${p.name} masuk keranjang!'),
