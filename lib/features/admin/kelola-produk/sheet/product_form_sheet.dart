@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../dashboard/data/model/product_model.dart';
 import '../../../dashboard/presentation/providers/product_provider.dart';
 import '../../../../core/services/image_service.dart';
 import '../../../../core/services/notification_service.dart';
