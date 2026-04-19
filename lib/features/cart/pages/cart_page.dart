@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../../checkout/pages/chekout_page.dart';
 import '../../dashboard/presentation/providers/cart_provider.dart';
 import '../../../core/services/notification_service.dart';
-import '../../auth/presentation/providers/auth_provider.dart'; // Tambahkan import ini
+import '../../auth/presentation/providers/auth_provider.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -138,20 +138,23 @@ class _CartPageState extends State<CartPage> {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      ElevatedButton(
-                      onPressed: cartItems.isEmpty ? null : () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const CheckoutPage()),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      SizedBox(
+                        width: double.infinity, height: 50,
+                        child: ElevatedButton(
+                          onPressed: cartItems.isEmpty ? null : () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const CheckoutPage()),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blueAccent,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                          child: const Text('Checkout Sekarang', 
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        ),
                       ),
-                      child: const Text('Checkout Sekarang', 
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                    ),
                     ],
                   ),
                 ),
