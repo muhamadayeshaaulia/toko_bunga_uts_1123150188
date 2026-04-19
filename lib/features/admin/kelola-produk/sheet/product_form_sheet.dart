@@ -20,8 +20,11 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
   final _priceController = TextEditingController();
   final _stockController = TextEditingController();
   final _descriptionController = TextEditingController();
-  
-  File? _imageFile; // File hasil crop
+
+  String _selectedCategory = "Makanan"; 
+  final List<String> _categories = ["Makanan", "Minuman", "Cemilan", "Lainnya"];
+
+  File? _imageFile;
 
   @override
   void initState() {
@@ -30,7 +33,10 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
       _nameController.text = widget.product!.name;
       _priceController.text = widget.product!.price.toStringAsFixed(0);
       _stockController.text = widget.product!.stock.toString();
-      _descriptionController.text = widget.product!.description!;
+      _descriptionController.text = widget.product!.description ?? "";
+      if (_categories.contains(widget.product!.category)) {
+        _selectedCategory = widget.product!.category;
+      }
     }
   }
 
@@ -43,7 +49,6 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
     super.dispose();
   }
 
-  // Fungsi memanggil ImageService untuk Pick + Crop
   Future<void> _handleImageSelection() async {
     final File? cropped = await ImageService.pickAndCropImage(context);
     if (cropped != null) {
@@ -68,7 +73,6 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header Form
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -83,12 +87,11 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
               ],
             ),
             const SizedBox(height: 20),
-
             Center(
               child: GestureDetector(
                 onTap: _handleImageSelection,
                 child: Container(
-                  height: 160,
+                  height: 140,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: Colors.grey.shade100,
@@ -105,39 +108,46 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
                               borderRadius: BorderRadius.circular(13),
                               child: Image.network(widget.product!.imageUrl, fit: BoxFit.cover),
                             )
-                          : Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.add_a_photo_rounded, size: 50, color: Colors.redAccent.withOpacity(0.5)),
-                                const SizedBox(height: 8),
-                                const Text("Ambil & Potong Foto", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w500)),
-                              ],
-                            ),
+                          : const Icon(Icons.add_a_photo_rounded, size: 50, color: Colors.grey),
                 ),
               ),
             ),
             const SizedBox(height: 20),
-
-            // Input Nama Produk
             TextField(
               controller: _nameController,
               decoration: const InputDecoration(
                 labelText: 'Nama Produk',
                 border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.shopping_bag_outlined),
               ),
             ),
             const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              value: _selectedCategory,
+              decoration: const InputDecoration(
+                labelText: 'Kategori',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.category_outlined),
+              ),
+              items: _categories.map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onChanged: (newValue) {
+                setState(() {
+                  _selectedCategory = newValue!;
+                });
+              },
+            ),
+            const SizedBox(height: 16),
+
             Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: _priceController,
-                    decoration: const InputDecoration(
-                      labelText: 'Harga',
-                      border: OutlineInputBorder(),
-                      prefixText: 'Rp ',
-                    ),
+                    decoration: const InputDecoration(labelText: 'Harga', border: OutlineInputBorder(), prefixText: 'Rp '),
                     keyboardType: TextInputType.number,
                   ),
                 ),
@@ -145,26 +155,21 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
                 Expanded(
                   child: TextField(
                     controller: _stockController,
-                    decoration: const InputDecoration(
-                      labelText: 'Stok',
-                      border: OutlineInputBorder(),
-                    ),
+                    decoration: const InputDecoration(labelText: 'Stok', border: OutlineInputBorder()),
                     keyboardType: TextInputType.number,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
+
             TextField(
               controller: _descriptionController,
               maxLines: 2,
-              decoration: const InputDecoration(
-                labelText: 'Deskripsi Produk',
-                border: OutlineInputBorder(),
-                alignLabelWithHint: true,
-              ),
+              decoration: const InputDecoration(labelText: 'Deskripsi', border: OutlineInputBorder()),
             ),
             const SizedBox(height: 24),
+
             SizedBox(
               width: double.infinity,
               height: 55,
@@ -179,7 +184,7 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
 
                     if (name.isEmpty || price <= 0) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Nama dan Harga harus valid!")),
+                        const SnackBar(content: Text("Data tidak valid!")),
                       );
                       return;
                     }
@@ -190,7 +195,7 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
                         widget.product!.id,
                         name: name,
                         price: price,
-                        category: widget.product!.category,
+                        category: _selectedCategory, 
                         description: desc,
                         stock: stock,
                         imageFile: _imageFile,
@@ -199,7 +204,7 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
                       success = await context.read<ProductProvider>().createProduct(
                         name: name,
                         price: price,
-                        category: "Umum",
+                        category: _selectedCategory,
                         description: desc,
                         stock: stock,
                         imageFile: _imageFile,
@@ -210,21 +215,17 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
                       Navigator.pop(context);
                       NotificationService.showNotification(
                         title: "716_Production",
-                        body: "Produk $name berhasil ${isEdit ? 'diperbarui' : 'ditambahkan'}!",
+                        body: "Produk $name masuk kategori $_selectedCategory!",
                       );
                     }
                   },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: isEdit ? Colors.blue : Colors.redAccent,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  elevation: 0,
                 ),
                 child: productProvider.isLoading 
                   ? const CircularProgressIndicator(color: Colors.white)
-                  : Text(
-                      isEdit ? 'UPDATE PRODUK' : 'SIMPAN PRODUK',
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-                    ),
+                  : Text(isEdit ? 'UPDATE PRODUK' : 'SIMPAN PRODUK', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
               ),
             ),
             const SizedBox(height: 30),
