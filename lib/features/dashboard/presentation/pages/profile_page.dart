@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../admin/kelola-produk/pages/admin_product_page.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../../core/routes/app_router.dart';
 
@@ -76,12 +77,13 @@ class ProfilePage extends StatelessWidget {
                   if (auth.isAdmin) ...[
                     _buildProfileMenu(
                       icon: Icons.inventory_2_outlined,
-                      title: 'Kelola Produk',
-                      color: Colors.redAccent, 
+                      title: 'Kelola Produk (Admin Only)',
+                      color: Colors.redAccent,
                       onTap: () {
-
-                        debugPrint("Pindah ke halaman Kelola Produk");
-   
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const AdminProductPage()),
+                        );
                       },
                     ),
                     const Divider(),
