@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../../features/auth/presentation/providers/auth_provider.dart';
 import '../../dashboard/presentation/providers/cart_provider.dart';
 import '../../dashboard/presentation/providers/product_provider.dart';
+import '../../../../core/services/notification_service.dart'; // IMPORT INI
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,7 +16,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // Panggil API saat halaman pertama kali dimuat
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ProductProvider>().fetchProducts();
     });
@@ -26,6 +26,9 @@ class _HomePageState extends State<HomePage> {
     final auth = context.watch<AuthProvider>();
     final productProvider = context.watch<ProductProvider>();
     final products = productProvider.products;
+
+    // Ambil nama user untuk notifikasi
+    final userName = auth.userModel?['name'] ?? auth.firebaseUser?.displayName ?? 'Pengguna';
 
     return Scaffold(
       appBar: AppBar(
@@ -38,7 +41,7 @@ class _HomePageState extends State<HomePage> {
             const Text('Katalog Produk', 
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             Text(
-              'Halo, ${auth.userModel?['name'] ?? auth.firebaseUser?.displayName ?? 'Pengguna'}!',
+              'Halo, $userName!',
               style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],
@@ -46,41 +49,26 @@ class _HomePageState extends State<HomePage> {
       ),
       body: switch (productProvider.status) {
         ProductStatus.loading || ProductStatus.initial => const Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('Menarik data dari server...'),
-              ],
-            ),
+            child: CircularProgressIndicator(),
           ),
         
         ProductStatus.error => Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.cloud_off, size: 80, color: Colors.grey),
-                  const SizedBox(height: 16),
-                  Text(
-                    productProvider.error ?? 'Gagal terhubung ke server',
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton.icon(
-                    onPressed: () => productProvider.fetchProducts(),
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Coba Lagi'),
-                  ),
-                ],
-              ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.cloud_off, size: 80, color: Colors.grey),
+                const SizedBox(height: 16),
+                Text(productProvider.error ?? 'Gagal terhubung ke server'),
+                ElevatedButton(
+                  onPressed: () => productProvider.fetchProducts(),
+                  child: const Text('Coba Lagi'),
+                ),
+              ],
             ),
           ),
 
         ProductStatus.loaded => products.isEmpty
-          ? const Center(child: Text('Belum ada produk di database.'))
+          ? const Center(child: Text('Belum ada produk.'))
           : RefreshIndicator(
               onRefresh: () => productProvider.fetchProducts(),
               child: GridView.builder(
@@ -96,7 +84,6 @@ class _HomePageState extends State<HomePage> {
                   final p = products[i];
                   return Card(
                     elevation: 3,
-                    shadowColor: Colors.black12,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,10 +95,7 @@ class _HomePageState extends State<HomePage> {
                               p.imageUrl,
                               width: double.infinity,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Container(
-                                color: Colors.grey.shade100,
-                                child: const Icon(Icons.broken_image_outlined, color: Colors.grey),
-                              ),
+                              errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
                             ),
                           ),
                         ),
@@ -120,55 +104,24 @@ class _HomePageState extends State<HomePage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                p.name,
-                                style: const TextStyle(fontWeight: FontWeight.bold),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Rp ${p.price.toStringAsFixed(0)}',
-                                style: const TextStyle(
-                                  color: Colors.blueAccent,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: Colors.blue.shade50,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  p.category,
-                                  style: const TextStyle(fontSize: 10, color: Colors.blue),
-                                ),
-                              ),
+                              Text(p.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                              Text('Rp ${p.price.toStringAsFixed(0)}', 
+                                style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.w800)),
                               const SizedBox(height: 8),
                               SizedBox(
                                 width: double.infinity,
                                 child: ElevatedButton(
-                                  onPressed: () {
-                                    // --- DEBUG LOG: INI BAGIAN PALING PENTING ---
-                                    debugPrint("=== PROSES TAMBAH KERANJANG ===");
-                                    debugPrint("Produk: ${p.name}");
-                                    debugPrint("ID Produk yang dikirim: ${p.id}");
-
-                                    if (p.id == 0) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Error: ID Produk 0. Cek ProductModel!'),
-                                          backgroundColor: Colors.red,
-                                        ),
-                                      );
-                                      return;
-                                    }
-
-                                    context.read<CartProvider>().addToCart(p.id);
+                                  onPressed: () async {
+                                    // 1. Tambah ke Keranjang lewat API
+                                    await context.read<CartProvider>().addToCart(p.id);
                                     
-                                    // Kasih feedback ke user
+                                    // 2. MUNCULKAN NOTIFIKASI POP-UP (Kaya WA)
+                                    NotificationService.showNotification(
+                                      title: "Berhasil Tambah Keranjang 🛒",
+                                      body: "Yey $userName, ${p.name} sudah masuk keranjang!",
+                                    );
+
+                                    // 3. Snackbar Feedback (Opsional)
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text('${p.name} masuk keranjang!'),
@@ -177,11 +130,7 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                     );
                                   },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blueAccent,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                    padding: const EdgeInsets.symmetric(vertical: 4),
-                                  ),
+                                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
                                   child: const Text('Beli', style: TextStyle(color: Colors.white, fontSize: 12)),
                                 ),
                               ),
