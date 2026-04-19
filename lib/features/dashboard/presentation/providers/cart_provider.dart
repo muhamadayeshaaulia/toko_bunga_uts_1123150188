@@ -84,8 +84,7 @@ class CartProvider extends ChangeNotifier {
     }
   }
 
-  // 3. Kurangi Quantity (POST ke endpoint /reduce)
-  // Fungsi ini yang dipanggil tombol minus (-)
+  // Fungsi yang dipanggil tombol minus (-)
   Future<void> decreaseQuantity(int? productId) async {
     if (productId == null || productId == 0) return;
 
@@ -141,5 +140,10 @@ class CartProvider extends ChangeNotifier {
   void clearCart() {
     _cartItems = [];
     notifyListeners();
+  }
+  void clearCartAfterCheckout() {
+    _cartItems = []; 
+    notifyListeners(); 
+    debugPrint("State keranjang dibersihkan setelah checkout.");
   }
 }
