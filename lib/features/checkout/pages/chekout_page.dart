@@ -73,8 +73,8 @@ class CheckoutPage extends StatelessWidget {
                         body: "Yey $userName, Pembayaran Berhasil! Barang sedang disiapkan toko ya!",
                       );
                       
-                      // Balik ke Home atau kosongkan keranjang (opsional)
-                      Navigator.popUntil(context, (route) => route.isFirst);
+                      context.read<CartProvider>().clearCart();
+                      Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green, // Warna sukses
