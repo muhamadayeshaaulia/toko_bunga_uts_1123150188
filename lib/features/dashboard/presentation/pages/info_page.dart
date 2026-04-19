@@ -77,7 +77,7 @@ class InfoPage extends StatelessWidget {
             const ListTile(
               leading: Icon(Icons.code_rounded, color: Colors.blueAccent),
               title: Text('Teknologi'),
-              subtitle: Text('Flutter, Dart, Golang, MySQL'),
+              subtitle: Text('Flutter, Dart, Golang, MySQL , Firebase'),
             ),
             
             const SizedBox(height: 40),
