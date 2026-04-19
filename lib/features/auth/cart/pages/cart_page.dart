@@ -13,18 +13,18 @@ class _CartPageState extends State<CartPage> {
   @override
   void initState() {
     super.initState();
-    // Ambil data keranjang saat halaman dibuka
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // context.read<CartProvider>().fetchCart();
-    });
+    // Memastikan data ditarik saat pertama kali masuk halaman
+    Future.microtask(() => context.read<CartProvider>().fetchCart());
   }
 
   @override
   Widget build(BuildContext context) {
+    // context.watch akan mendengarkan setiap kali notifyListeners() di provider dipanggil
     final cartProvider = context.watch<CartProvider>();
     final cartItems = cartProvider.cartItems;
 
     return Scaffold(
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
         title: const Text('Keranjang Belanja', 
           style: TextStyle(fontWeight: FontWeight.bold)),
@@ -34,9 +34,9 @@ class _CartPageState extends State<CartPage> {
         elevation: 0,
       ),
       body: cartProvider.isLoading 
-        ? const Center(child: CircularProgressIndicator()) // Loading state
+        ? const Center(child: CircularProgressIndicator())
         : cartItems.isEmpty 
-          ? const Center(child: Text('Keranjang kamu masih kosong')) // Empty state
+          ? const Center(child: Text('Keranjang kamu masih kosong'))
           : Column(
               children: [
                 Expanded(
@@ -45,60 +45,50 @@ class _CartPageState extends State<CartPage> {
                     itemCount: cartItems.length,
                     itemBuilder: (context, index) {
                       final item = cartItems[index];
-                      // Ambil data produk dari relasi Preload di Golang
-                      final product = item.product; 
+                      final product = item.product;
 
                       return Card(
                         margin: const EdgeInsets.only(bottom: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(12.0),
                           child: Row(
                             children: [
-                              // Foto Produk Asli
+                              // Foto Produk
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
                                 child: Image.network(
                                   product?.imageUrl ?? '',
-                                  width: 80,
-                                  height: 80,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) => 
-                                    Container(width: 80, height: 80, color: Colors.grey.shade200, child: const Icon(Icons.fastfood)),
+                                  width: 70, height: 70, fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => Container(
+                                    width: 70, height: 70, color: Colors.grey.shade200,
+                                    child: const Icon(Icons.fastfood),
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 16),
-                              // Detail Produk Asli
+                              // Info Produk
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(product?.name ?? 'Produk', 
-                                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                                    Text(product?.name ?? 'Produk', style: const TextStyle(fontWeight: FontWeight.bold)),
                                     const SizedBox(height: 4),
                                     Text('Rp ${product?.price.toStringAsFixed(0)}', 
-                                      style: TextStyle(color: Colors.blue.shade700)),
+                                      style: TextStyle(color: Colors.blue.shade700, fontWeight: FontWeight.bold)),
                                   ],
                                 ),
                               ),
-                              // Jumlah Barang
                               Row(
                                 children: [
                                   IconButton(
-                                    icon: const Icon(Icons.remove_circle_outline),
-                                    onPressed: () {
-                                      // Logic Kurangi (Bisa dikembangkan nanti)
-                                    },
+                                    icon: const Icon(Icons.remove_circle_outline, color: Colors.redAccent),
+                                    onPressed: () => cartProvider.decreaseQuantity(item.productId),
                                   ),
-                                  Text('${item.quantity}'),
+                                  Text('${item.quantity}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                                   IconButton(
-                                    icon: const Icon(Icons.add_circle_outline),
-                                    onPressed: () {
-                                      // Logic Tambah (Panggil addToCart lagi)
-                                      context.read<CartProvider>().addToCart(item.productId);
-                                      // context.read<CartProvider>().fetchCart(); // Refresh data
-                                    },
+                                    icon: const Icon(Icons.add_circle_outline, color: Colors.blueAccent),
+                                    onPressed: () => cartProvider.addToCart(item.productId),
                                   ),
                                 ],
                               )
@@ -109,38 +99,29 @@ class _CartPageState extends State<CartPage> {
                     },
                   ),
                 ),
-
-                // Bagian Total Pembayaran Dinamis
+                // Footer Total & Checkout
                 Container(
                   padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, -5),
-                      ),
-                    ],
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                    boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
                   ),
                   child: Column(
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Total Pembayaran', 
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                          Text('Rp ${cartItems.fold(0.0, (sum, item) => sum + ((item.product?.price ?? 0) * item.quantity)).toStringAsFixed(0)}', 
-                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
+                          const Text('Total Pembayaran', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                          Text('Rp ${cartProvider.totalPrice.toStringAsFixed(0)}', 
+                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
                         ],
                       ),
                       const SizedBox(height: 16),
                       SizedBox(
-                        width: double.infinity,
-                        height: 50,
+                        width: double.infinity, height: 50,
                         child: ElevatedButton(
-                          onPressed: () {
+                          onPressed: cartItems.isEmpty ? null : () {
                             // Logic Checkout
                           },
                           style: ElevatedButton.styleFrom(

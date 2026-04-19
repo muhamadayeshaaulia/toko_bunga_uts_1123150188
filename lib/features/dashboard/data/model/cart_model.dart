@@ -18,12 +18,12 @@ class CartModel {
 
   factory CartModel.fromJson(Map<String, dynamic> json) {
     return CartModel(
-      id: json['id'] ?? 0,
+      id: json['ID'] ?? json['id'] ?? 0,
       userId: json['user_id'] ?? 0,
       productId: json['product_id'] ?? 0,
       quantity: json['quantity'] ?? 0,
-      product: json['Product'] != null 
-          ? ProductModel.fromJson(json['Product']) 
+      product: json['product'] != null 
+          ? ProductModel.fromJson(json['product']) 
           : null,
     );
   }
