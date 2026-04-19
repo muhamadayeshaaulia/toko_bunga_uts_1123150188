@@ -173,11 +173,14 @@ class AuthProvider extends ChangeNotifier {
 
   Future<bool> checkEmailVerified() async {
     try {
-      await _auth.currentUser?.reload();
-      _firebaseUser = _auth.currentUser;
+      final user = _auth.currentUser;
+      if (user != null) {
+        await user.reload();
+        _firebaseUser = _auth.currentUser; 
 
-      if (_firebaseUser?.emailVerified ?? false) {
-        return await _verifyTokenToBackend();
+        if (_firebaseUser?.emailVerified ?? false) {
+          return await _verifyTokenToBackend();
+        }
       }
     } catch (e) {
       debugPrint("Gagal polling email: $e");
