@@ -45,6 +45,7 @@ dependencies:
   equatable: ^2.0.8
   email_validator: ^3.0.0
   flutter_svg: ^2.2.4
+  image_cropper: ^12.2.1
 
 dev_dependencies:
   flutter_test:
