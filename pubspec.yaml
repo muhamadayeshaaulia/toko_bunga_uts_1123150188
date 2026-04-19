@@ -1,5 +1,5 @@
 name: uts_1123150188_semester6
-description: "A new Flutter project."
+description: "Aplikasi E-Commerce Sederhana dengan Flutter, Firebase, dan Golang untuk UTS Pemrograman Mobile Lanjutan"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
