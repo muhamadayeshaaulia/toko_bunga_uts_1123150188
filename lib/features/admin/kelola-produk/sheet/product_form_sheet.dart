@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart'; 
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import '../../../dashboard/data/model/product_model.dart';
+import '../../../dashboard/presentation/providers/product_provider.dart';
 
 class ProductFormSheet extends StatefulWidget {
   final ProductModel? product;
@@ -41,6 +43,7 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
   @override
   Widget build(BuildContext context) {
     final isEdit = widget.product != null;
+    final productProvider = context.watch<ProductProvider>();
 
     return Padding(
       padding: EdgeInsets.only(
@@ -50,47 +53,31 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              isEdit ? 'Edit Produk' : 'Tambah Produk Baru',
+              isEdit ? 'Edit Produk 716' : 'Tambah Produk Baru',
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
             
-            // --- AREA PREVIEW GAMBAR ---
-            Center(
-              child: GestureDetector(
-                onTap: _pickImage,
-                child: Container(
-                  height: 150,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.shade400),
-                  ),
-                  child: _imageFile != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.file(_imageFile!, fit: BoxFit.cover),
-                        )
-                      : (isEdit && widget.product!.imageUrl.isNotEmpty)
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.network(widget.product!.imageUrl, fit: BoxFit.cover),
-                            )
-                          : const Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.add_a_photo, size: 40, color: Colors.grey),
-                                Text("Klik untuk Upload Foto Produk", style: TextStyle(color: Colors.grey)),
-                              ],
-                            ),
+            // Preview Gambar
+            GestureDetector(
+              onTap: _pickImage,
+              child: Container(
+                height: 120, width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade300),
                 ),
+                child: _imageFile != null
+                    ? ClipRRect(borderRadius: BorderRadius.circular(12), child: Image.file(_imageFile!, fit: BoxFit.cover))
+                    : (isEdit) 
+                        ? ClipRRect(borderRadius: BorderRadius.circular(12), child: Image.network(widget.product!.imageUrl, fit: BoxFit.cover))
+                        : const Icon(Icons.add_a_photo, size: 40, color: Colors.grey),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
             TextField(
               controller: _nameController,
@@ -117,19 +104,52 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
               ],
             ),
             const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                debugPrint("Simpan: ${_nameController.text}, Image Path: ${_imageFile?.path}");
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isEdit ? Colors.blue : Colors.redAccent,
-                minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              ),
-              child: Text(
-                isEdit ? 'Simpan Perubahan' : 'Tambah Produk',
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: productProvider.isLoading 
+                ? null 
+                : () async {
+                  final name = _nameController.text;
+                  final price = double.tryParse(_priceController.text) ?? 0;
+                  final stock = int.tryParse(_stockController.text) ?? 0;
+
+                  bool success;
+                  if (isEdit) {
+                    success = await context.read<ProductProvider>().updateProduct(
+                      widget.product!.id,
+                      name: name,
+                      price: price,
+                      category: widget.product!.category, 
+                      stock: stock,
+                      imageFile: _imageFile,
+                    );
+                  } else {
+                    success = await context.read<ProductProvider>().createProduct(
+                      name: name,
+                      price: price,
+                      category: "Makanan", 
+                      stock: stock,
+                      imageFile: _imageFile,
+                    );
+                  }
+
+                  if (success && context.mounted) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(isEdit ? "Produk Berhasil Diupdate!" : "Produk Berhasil Ditambah!")),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isEdit ? Colors.blue : Colors.redAccent,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                child: productProvider.isLoading 
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : Text(isEdit ? 'SIMPAN PERUBAHAN' : 'TAMBAH PRODUK', 
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
               ),
             ),
             const SizedBox(height: 24),
