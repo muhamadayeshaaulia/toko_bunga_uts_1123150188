@@ -135,6 +135,27 @@ class CartProvider extends ChangeNotifier {
       debugPrint("ERROR REMOVE FROM CART: $e");
     }
   }
+  Future<void> clearCartInDatabase() async {
+    try {
+      final String? token = await FirebaseAuth.instance.currentUser?.getIdToken();
+
+      // Mengirim request DELETE ke Backend
+      final response = await DioClient.instance.delete(
+        '/cart', 
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        debugPrint("Database bersih, UI juga kita bersihkan.");
+        _cartItems = []; 
+        notifyListeners(); 
+      }
+    } on DioException catch (e) {
+      debugPrint("Gagal hapus data di server: ${e.response?.data}");
+    }
+  }
 
   // Fungsi tambahan untuk mengosongkan state saat logout
   void clearCart() {
