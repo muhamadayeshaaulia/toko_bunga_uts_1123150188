@@ -67,21 +67,23 @@ class CheckoutPage extends StatelessWidget {
                   height: 55,
                   child: ElevatedButton(
                     onPressed: () {
-                      // NOTIFIKASI SEMENTARA
                       NotificationService.showNotification(
                         title: "716_Production",
                         body: "Yey $userName, Pembayaran Berhasil! Barang sedang disiapkan toko ya!",
                       );
-                      
-                      context.read<CartProvider>().clearCart();
-                      Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+
+                      context.read<CartProvider>().clearCartAfterCheckout();
+
+                      Navigator.of(context).pushNamedAndRemoveUntil('/dashboard', (route) => false);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green, // Warna sukses
+                      backgroundColor: Colors.green,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: const Text('BAYAR SEKARANG', 
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                    child: const Text(
+                      'BAYAR SEKARANG',
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
               ],
