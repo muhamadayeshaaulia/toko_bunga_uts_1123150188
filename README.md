@@ -5,7 +5,8 @@
  * 1123150188
  * TI SE SH 23
  * Teknik Informatika
- * Software Engineering
+ * Software Engineering 
+ * [Link-Youtube-presentation](https://youtu.be/Jyag6PCHHvY?si=S2vp7k-C7Z-Ihvrz)
 
 # Aplikasi E-commerce Toko Bunga 716_Production
 
