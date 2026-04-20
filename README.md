@@ -99,5 +99,5 @@ Aplikasi ini di rancang dengan :
 * Bukan hanya sekedari ui Aplikasi di sini mampu memberikan notifikasi lokal ketika berhasil add produk & edit produk
   <p align="center">
   <img src="assets/images/notif_produk.jpg" width="200"/>
-  <img src="assets/images/norif_edit_produk.jpg" width="200"/>
+  <img src="assets/images/notif_edit_produk.jpg" width="200"/>
 </p>
