@@ -38,3 +38,8 @@ Aplikasi ini di rancang dengan :
   <img src="assets/images/link_verified.jpg" width="200"/>
   <img src="assets/images/ter_verified.jpg" width="200"/>
 </p>
+
+ * Setelah email terverifikasi makan aplikasi langsung mengarahkan ke halaman dashboard
+ <p align="center">
+  <img src="assets/images/katalog.jpg" width="200"/>
+</p>
