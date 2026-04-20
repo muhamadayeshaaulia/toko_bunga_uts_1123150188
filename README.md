@@ -50,3 +50,40 @@ Aplikasi ini di rancang dengan :
   <img src="assets/images/cart_kosong.jpg" width="200"/>
   <img src="assets/images/informasi.jpg" width="200"/>
 </p>
+
+ * Ketika user melakukan pembelian barang di katalog
+ <p align="center">
+  <img src="assets/images/notif_beli_katalog.jpg" width="200"/>
+</p>
+
+ * keranjang yang awalnya kosong sekarang sudah ada detail produk dan harga produk di dalam nya
+  <p align="center">
+  <img src="assets/images/cart_berisi.jpg" width="200"/>
+</p>
+
+* User dapat menambahkan atau mengurangi produk di keranjang dan sistem memberikan notifikasi kepada user
+  <p align="center">
+  <img src="assets/images/notif_tambah_cart.jpg" width="200"/>
+</p>
+
+* Setelah user memastikan dan memasukan barang nya ke keranjang user masuk ke halaman untuk melakukan pembayaran
+  <p align="center">
+  <img src="assets/images/chekout.jpg" width="200"/>
+</p>
+
+* Setelah melakukan pembayaran user akan di kembalikan ke halaman katalog dan user mendapatkan notifikasi
+  <p align="center">
+  <img src="assets/images/notifikasi_chekout.jpg" width="200"/>
+  <img src="assets/images/katalog.jpg" width="200"/>
+</p>
+
+* Setelah berhasil melakukan pembayaran otomasit cart milik si user kosong tidak ada produk di dalam keranjang
+  <p align="center">
+  <img src="assets/images/cart_kosong.jpg" width="200"/>
+</p>
+
+* Lanjut ke halaman profile di sini ada 2 kategori role Admin & User karena di admin ada kelola produk
+  <p align="center">
+  <img src="assets/images/profile_admin.jpg" width="200"/>
+  <img src="assets/images/profile_user.jpg" width="200"/>
+</p>
