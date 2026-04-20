@@ -7,7 +7,7 @@
  * Teknik Informatika
  * Software Engineering
 
-Aplikasi E-commerce Toko Bungan 716_Production
+# Aplikasi E-commerce Toko Bunga 716_Production
 
 ## Tect Stack
 Aplikasi ini di rancang dengan :
