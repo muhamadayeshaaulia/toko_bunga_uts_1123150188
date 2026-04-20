@@ -19,10 +19,9 @@ Aplikasi ini di rancang dengan :
 
 # Tampilan UI untuk APlikasi ini
 
+ * Tampilan ketika awal pertama kali aplikasi berjalan
 <p align="center">
-    tampilan awal ketika login
   <img src="assets/images/gambar1.jpg" width="200"/>
   <img src="assets/images/gambar2.jpg" width="200"/>
   <img src="assets/images/gambar3.jpg" width="200"/>
-
 </p>
