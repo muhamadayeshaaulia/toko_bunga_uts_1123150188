@@ -87,3 +87,17 @@ Aplikasi ini di rancang dengan :
   <img src="assets/images/profile_admin.jpg" width="200"/>
   <img src="assets/images/profile_user.jpg" width="200"/>
 </p>
+
+* Masuk sebagai role admin ke halaman kelola produk untuk menambahkan produk edit dan hapus produk
+  <p align="center">
+  <img src="assets/images/kelola_produk.jpg" width="200"/>
+  <img src="assets/images/tambah_produk.jpg" width="200"/>
+  <img src="assets/images/tambah_produk2.jpg" width="200"/>
+  <img src="assets/images/edit_produk.jpg" width="200"/>
+</p>
+
+* Bukan hanya sekedari ui Aplikasi di sini mampu memberikan notifikasi lokal ketika berhasil add produk & edit produk
+  <p align="center">
+  <img src="assets/images/notif_produk.jpg" width="200"/>
+  <img src="assets/images/norif_edit_produk.jpg" width="200"/>
+</p>
