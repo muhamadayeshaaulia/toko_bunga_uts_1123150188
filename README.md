@@ -43,3 +43,10 @@ Aplikasi ini di rancang dengan :
  <p align="center">
   <img src="assets/images/katalog.jpg" width="200"/>
 </p>
+
+ * Fitur di dalam aplikasi ketika user memasuki aplikasi
+  <p align="center">
+  <img src="assets/images/katalog.jpg" width="200"/>
+  <img src="assets/images/cart_kosong.jpg" width="200"/>
+  <img src="assets/images/informasi.jpg" width="200"/>
+</p>
