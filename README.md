@@ -25,3 +25,10 @@ Aplikasi ini di rancang dengan :
   <img src="assets/images/gambar2.jpg" width="200"/>
   <img src="assets/images/gambar3.jpg" width="200"/>
 </p>
+
+ * Tampilan halaman Login register & email Verified
+ <p align="center">
+  <img src="assets/images/login_screen.jpg" width="200"/>
+  <img src="assets/images/register_screen.jpg" width="200"/>
+  <img src="assets/images/verified_email.jpg" width="200"/>
+</p>
