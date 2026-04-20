@@ -32,3 +32,9 @@ Aplikasi ini di rancang dengan :
   <img src="assets/images/register_screen.jpg" width="200"/>
   <img src="assets/images/verified_email.jpg" width="200"/>
 </p>
+
+ * Setelah aplikasi mengirimkan aplikasi cek email & klik email untuk verified
+  <p align="center">
+  <img src="assets/images/link_verified.jpg" width="200"/>
+  <img src="assets/images/ter_verified.jpg" width="200"/>
+</p>
