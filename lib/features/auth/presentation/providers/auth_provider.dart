@@ -192,6 +192,22 @@ class AuthProvider extends ChangeNotifier {
     await _firebaseUser?.sendEmailVerification();
   }
 
+  Future<bool> resetPassword(String email) async {
+    _setLoading();
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      _status = AuthStatus.unauthenticated;
+      notifyListeners();
+      return true;
+    } on FirebaseAuthException catch (e) {
+      _setError(_mapFirebaseError(e.code));
+      return false;
+    } catch (e) {
+      _setError('Gagal mengirim email reset: $e');
+      return false;
+    }
+  }
+
   Future<void> logout() async {
     await _auth.signOut();
     await _googleSignIn.signOut();

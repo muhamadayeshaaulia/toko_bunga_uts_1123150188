@@ -76,6 +76,63 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  // Dialog untuk Lupa Password
+  void _showForgotPasswordDialog(BuildContext context) {
+    final emailCtrl = TextEditingController(text: _emailCtrl.text);
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Lupa Password'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Masukkan email Anda untuk menerima link reset password:'),
+            const SizedBox(height: 16),
+            CustomTextField(
+              label: 'Email',
+              hint: 'contoh@email.com',
+              controller: emailCtrl,
+              keyboardType: TextInputType.emailAddress,
+              prefixIcon: const Icon(Icons.email_outlined),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Batal'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final email = emailCtrl.text.trim();
+              if (!EmailValidator.validate(email)) {
+                ScaffoldMessenger.of(ctx).showSnackBar(
+                  const SnackBar(content: Text('Format email salah'), backgroundColor: Colors.red),
+                );
+                return;
+              }
+              Navigator.pop(ctx);
+              
+              final auth = context.read<AuthProvider>();
+              final ok = await auth.resetPassword(email);
+              if (!mounted) return;
+              if (ok) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Link reset password telah dikirim ke email Anda'), backgroundColor: Colors.green),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(auth.errorMessage ?? 'Gagal mengirim email reset'), backgroundColor: Colors.red),
+                );
+              }
+            },
+            child: const Text('Kirim Link'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Memantau status loading dari AuthProvider
@@ -129,7 +186,16 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     validator: (v) => (v?.isEmpty ?? true) ? 'Password wajib diisi' : null,
                   ),
-                  const SizedBox(height: 24),
+                  
+                  // Lupa Password Button
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () => _showForgotPasswordDialog(context),
+                      child: const Text('Lupa Password?'),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   
                   // Tombol Login Utama
                   CustomButton(
