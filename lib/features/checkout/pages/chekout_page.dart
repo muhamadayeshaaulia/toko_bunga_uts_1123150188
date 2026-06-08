@@ -90,10 +90,9 @@ class CheckoutPage extends StatelessWidget {
                           );
                         }
 
-                        // Kembali ke dashboard lalu buka history transaksi
+                        // Kembali ke dashboard saja untuk background
                         if (context.mounted) {
                           Navigator.of(context).pushNamedAndRemoveUntil('/dashboard', (route) => false);
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => const TransactionHistoryPage()));
                         }
                       } else {
                         if (context.mounted) {

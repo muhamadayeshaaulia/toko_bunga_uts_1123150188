@@ -61,6 +61,8 @@ class _MyAppState extends State<MyApp> {
         );
         // Force routing ke halaman history
         if (navigatorKey.currentState != null) {
+          // Hapus semua tumpukan layar (termasuk splash screen) agar tidak bentrok
+          navigatorKey.currentState!.pushNamedAndRemoveUntil('/dashboard', (route) => false);
           navigatorKey.currentState!.push(
             MaterialPageRoute(builder: (context) => const TransactionHistoryPage()),
           );
