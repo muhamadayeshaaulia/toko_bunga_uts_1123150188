@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'; 
+import '../../../../core/services/secure_storage.dart'; 
 import '../../../../core/services/dio_client.dart';
 import '../../data/model/cart_model.dart';
 
@@ -29,7 +29,7 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final String? token = await FirebaseAuth.instance.currentUser?.getIdToken();
+      final String? token = await SecureStorageService.getToken();
 
       final response = await DioClient.instance.get(
         '/cart',
@@ -60,7 +60,7 @@ class CartProvider extends ChangeNotifier {
     if (productId == null || productId == 0) return;
 
     try {
-      final String? token = await FirebaseAuth.instance.currentUser?.getIdToken();
+      final String? token = await SecureStorageService.getToken();
 
       final response = await DioClient.instance.post(
         '/cart/add',
@@ -89,7 +89,7 @@ class CartProvider extends ChangeNotifier {
     if (productId == null || productId == 0) return;
 
     try {
-      final String? token = await FirebaseAuth.instance.currentUser?.getIdToken();
+      final String? token = await SecureStorageService.getToken();
 
       final response = await DioClient.instance.post(
         '/cart/reduce',
@@ -118,7 +118,7 @@ class CartProvider extends ChangeNotifier {
     if (productId == null || productId == 0) return;
 
     try {
-      final String? token = await FirebaseAuth.instance.currentUser?.getIdToken();
+      final String? token = await SecureStorageService.getToken();
       
       // Jika kamu punya endpoint DELETE /cart/:id di Golang
       final response = await DioClient.instance.delete(
@@ -137,7 +137,7 @@ class CartProvider extends ChangeNotifier {
   }
   Future<void> clearCartInDatabase() async {
     try {
-      final String? token = await FirebaseAuth.instance.currentUser?.getIdToken();
+      final String? token = await SecureStorageService.getToken();
 
       // Mengirim request DELETE ke Backend
       final response = await DioClient.instance.delete(
@@ -171,7 +171,7 @@ class CartProvider extends ChangeNotifier {
   // Fungsi membuat transaksi dan memanggil Golang POST /transactions
   Future<String?> createTransaction() async {
     try {
-      final String? token = await FirebaseAuth.instance.currentUser?.getIdToken();
+      final String? token = await SecureStorageService.getToken();
 
       final response = await DioClient.instance.post(
         '/transactions', 

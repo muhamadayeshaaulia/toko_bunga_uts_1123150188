@@ -5,6 +5,7 @@ import '../../dashboard/presentation/providers/cart_provider.dart';
 import '../../../../features/auth/presentation/providers/auth_provider.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/services/secure_storage.dart';
+import '../../dashboard/presentation/pages/transaction_history_page.dart';
 
 class CheckoutPage extends StatelessWidget {
   const CheckoutPage({super.key});
@@ -71,12 +72,12 @@ class CheckoutPage extends StatelessWidget {
                   height: 55,
                   child: ElevatedButton(
                     onPressed: cartItems.isEmpty ? null : () async {
+                      final total = cartProvider.totalPrice; // Simpan total sebelum keranjang dikosongkan
                       // Ini akan memanggil endpoint POST /transactions di Golang
                       final invoiceId = await context.read<CartProvider>().createTransaction();
 
                       if (invoiceId != null) {
                         // Memanggil Deep Link ke Aplikasi E-Money
-                        final total = cartProvider.totalPrice;
                         final token = await SecureStorageService.getToken();
                         final url = Uri.parse('emoneyapp://pay?invoice_id=$invoiceId&amount=$total&token=$token');
                         
@@ -89,9 +90,10 @@ class CheckoutPage extends StatelessWidget {
                           );
                         }
 
-                        // Semua halaman di belakang (Cart/Checkout) akan dihapus dari memori
+                        // Kembali ke dashboard lalu buka history transaksi
                         if (context.mounted) {
                           Navigator.of(context).pushNamedAndRemoveUntil('/dashboard', (route) => false);
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => const TransactionHistoryPage()));
                         }
                       } else {
                         if (context.mounted) {

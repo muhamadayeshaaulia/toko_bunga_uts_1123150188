@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:app_links/app_links.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -22,8 +24,43 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late AppLinks _appLinks;
+  StreamSubscription<Uri>? _linkSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _initDeepLinks();
+  }
+
+  @override
+  void dispose() {
+    _linkSubscription?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _initDeepLinks() async {
+    _appLinks = AppLinks();
+    
+    _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
+      if (uri.scheme == 'ecommerceapp' && uri.host == 'success') {
+        NotificationService.showNotification(
+          title: 'Pembayaran Berhasil! 🎉',
+          body: 'Tagihan Anda berhasil dibayar menggunakan E-Money.',
+        );
+      }
+    }, onError: (err) {
+      debugPrint('Error deep link: $err');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

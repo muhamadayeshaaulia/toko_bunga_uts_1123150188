@@ -47,6 +47,7 @@ dependencies:
   flutter_svg: ^2.2.4
   image_cropper: ^12.2.1
   url_launcher: ^6.3.0
+  app_links: ^7.0.0
 
 dev_dependencies:
   flutter_test:
