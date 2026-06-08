@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../admin/kelola-produk/pages/admin_product_page.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../../core/routes/app_router.dart';
+import 'transaction_history_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -97,7 +98,12 @@ class ProfilePage extends StatelessWidget {
                   _buildProfileMenu(
                     icon: Icons.history_rounded,
                     title: 'Riwayat Transaksi',
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const TransactionHistoryPage()),
+                      );
+                    },
                   ),
                   _buildProfileMenu(
                     icon: Icons.shield_outlined,
