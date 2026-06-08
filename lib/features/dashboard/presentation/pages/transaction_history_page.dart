@@ -166,7 +166,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                                     } catch (e) {
                                       if (context.mounted) {
                                         ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(content: Text('Aplikasi E-Money belum di-install')),
+                                          const SnackBar(content: Text('Aplikasi E-Money Mamah Saya belum di-install')),
                                         );
                                       }
                                     }

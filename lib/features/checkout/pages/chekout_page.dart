@@ -86,7 +86,7 @@ class CheckoutPage extends StatelessWidget {
                         } catch (e) {
                           // Jika gagal / aplikasi e-money belum diinstall, kita beritahu
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Aplikasi E-Money belum di-install atau tidak bisa dibuka')),
+                            const SnackBar(content: Text('Aplikasi E-Money Mamah Saya belum di-install atau tidak bisa dibuka')),
                           );
                         }
 

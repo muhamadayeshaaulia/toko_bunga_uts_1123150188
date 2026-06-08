@@ -5,11 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import 'core/routes/app_router.dart';
+import 'features/dashboard/presentation/pages/transaction_history_page.dart';
 import 'core/services/notification_service.dart';
 import 'features/auth/presentation/providers/auth_provider.dart';
 import 'features/dashboard/presentation/providers/cart_provider.dart';
 import 'features/dashboard/presentation/providers/product_provider.dart';
 import 'firebase_options.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -54,8 +57,14 @@ class _MyAppState extends State<MyApp> {
       if (uri.scheme == 'ecommerceapp' && uri.host == 'success') {
         NotificationService.showNotification(
           title: 'Pembayaran Berhasil! 🎉',
-          body: 'Tagihan Anda berhasil dibayar menggunakan E-Money.',
+          body: 'Tagihan Anda berhasil dibayar menggunakan E-Money Mamah Saya.',
         );
+        // Force routing ke halaman history
+        if (navigatorKey.currentState != null) {
+          navigatorKey.currentState!.push(
+            MaterialPageRoute(builder: (context) => const TransactionHistoryPage()),
+          );
+        }
       }
     }, onError: (err) {
       debugPrint('Error deep link: $err');
@@ -77,6 +86,7 @@ class _MyAppState extends State<MyApp> {
         ),
       ],
       child: MaterialApp(
+        navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         title: 'My App',
         initialRoute: AppRouter.splash,
