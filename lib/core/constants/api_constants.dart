@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ApiConstants {
-  static const String baseUrl = 'http://192.168.100.218:8080/v1';
+  static const String baseUrl = 'http://192.168.8.244:8080/v1';
 
   // Auth endpoints
   static const String verifyToken = '/auth/verify-token';
