@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/services/dio_client.dart';
 
 class TransactionHistoryPage extends StatefulWidget {
@@ -141,13 +142,46 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                               ],
                             ),
                           ),
-                          trailing: Text(
-                            'Rp $total',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: Colors.blueAccent,
-                            ),
+                          trailing: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Rp $total',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: Colors.blueAccent,
+                                ),
+                              ),
+                              if (status.toLowerCase() == 'pending') ...[
+                                const SizedBox(height: 4),
+                                InkWell(
+                                  onTap: () async {
+                                    final token = await FirebaseAuth.instance.currentUser?.getIdToken();
+                                    final url = Uri.parse('emoneyapp://pay?invoice_id=$invoiceId&amount=$total&token=$token');
+                                    try {
+                                      await launchUrl(url, mode: LaunchMode.externalApplication);
+                                    } catch (e) {
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(content: Text('Aplikasi E-Money belum di-install')),
+                                        );
+                                      }
+                                    }
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: Colors.orange,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: const Text('Bayar Sekarang', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                                  ),
+                                ),
+                              ]
+                            ],
                           ),
                         ),
                       );
