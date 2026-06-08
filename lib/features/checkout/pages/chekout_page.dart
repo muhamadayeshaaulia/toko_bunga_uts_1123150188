@@ -4,7 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../dashboard/presentation/providers/cart_provider.dart';
 import '../../../../features/auth/presentation/providers/auth_provider.dart';
 import '../../../../core/services/notification_service.dart';
-import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
+import '../../../../core/services/secure_storage.dart';
 
 class CheckoutPage extends StatelessWidget {
   const CheckoutPage({super.key});
@@ -77,7 +77,7 @@ class CheckoutPage extends StatelessWidget {
                       if (invoiceId != null) {
                         // Memanggil Deep Link ke Aplikasi E-Money
                         final total = cartProvider.totalPrice;
-                        final token = await FirebaseAuth.instance.currentUser?.getIdToken();
+                        final token = await SecureStorageService.getToken();
                         final url = Uri.parse('emoneyapp://pay?invoice_id=$invoiceId&amount=$total&token=$token');
                         
                         try {

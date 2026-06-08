@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import '../../../../core/services/secure_storage.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/services/dio_client.dart';
 
@@ -23,7 +23,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
 
   Future<void> _fetchTransactions() async {
     try {
-      final String? token = await FirebaseAuth.instance.currentUser?.getIdToken();
+      final String? token = await SecureStorageService.getToken();
 
       final response = await DioClient.instance.get(
         '/transactions',
@@ -159,7 +159,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                                 const SizedBox(height: 4),
                                 InkWell(
                                   onTap: () async {
-                                    final token = await FirebaseAuth.instance.currentUser?.getIdToken();
+                                    final token = await SecureStorageService.getToken();
                                     final url = Uri.parse('emoneyapp://pay?invoice_id=$invoiceId&amount=$total&token=$token');
                                     try {
                                       await launchUrl(url, mode: LaunchMode.externalApplication);
