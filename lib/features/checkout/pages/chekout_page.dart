@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../dashboard/presentation/providers/cart_provider.dart';
 import '../../../../features/auth/presentation/providers/auth_provider.dart';
 import '../../../../core/services/notification_service.dart';
@@ -70,18 +71,33 @@ class CheckoutPage extends StatelessWidget {
                   height: 55,
                   child: ElevatedButton(
                     onPressed: cartItems.isEmpty ? null : () async {
-                      // Ini akan memanggil endpoint DELETE /cart di Golang
-                      await context.read<CartProvider>().clearCartInDatabase();
+                      // Ini akan memanggil endpoint POST /transactions di Golang
+                      final invoiceId = await context.read<CartProvider>().createTransaction();
 
-                      // 2. Munculkan Notifikasi Pop-up (Kayak WA)
-                      NotificationService.showNotification(
-                        title: "716_Production",
-                        body: "Yey $userName, Pembayaran Berhasil! Barang sedang disiapkan toko ya!",
-                      );
+                      if (invoiceId != null) {
+                        // Memanggil Deep Link ke Aplikasi E-Money
+                        final total = cartProvider.totalPrice;
+                        final url = Uri.parse('emoneyapp://pay?invoice_id=$invoiceId&amount=$total');
+                        
+                        try {
+                          await launchUrl(url, mode: LaunchMode.externalApplication);
+                        } catch (e) {
+                          // Jika gagal / aplikasi e-money belum diinstall, kita beritahu
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Aplikasi E-Money belum di-install atau tidak bisa dibuka')),
+                          );
+                        }
 
-                      // Semua halaman di belakang (Cart/Checkout) akan dihapus dari memori
-                      if (context.mounted) {
-                        Navigator.of(context).pushNamedAndRemoveUntil('/dashboard', (route) => false);
+                        // Semua halaman di belakang (Cart/Checkout) akan dihapus dari memori
+                        if (context.mounted) {
+                          Navigator.of(context).pushNamedAndRemoveUntil('/dashboard', (route) => false);
+                        }
+                      } else {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Gagal membuat tagihan. Coba lagi.')),
+                          );
+                        }
                       }
                     },
                     style: ElevatedButton.styleFrom(

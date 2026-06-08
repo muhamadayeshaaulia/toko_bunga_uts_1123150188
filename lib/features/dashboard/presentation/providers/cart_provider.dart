@@ -167,4 +167,32 @@ class CartProvider extends ChangeNotifier {
     notifyListeners(); 
     debugPrint("State keranjang dibersihkan setelah checkout.");
   }
+
+  // Fungsi membuat transaksi dan memanggil Golang POST /transactions
+  Future<String?> createTransaction() async {
+    try {
+      final String? token = await FirebaseAuth.instance.currentUser?.getIdToken();
+
+      final response = await DioClient.instance.post(
+        '/transactions', 
+        data: {
+          'total_amount': totalPrice,
+        },
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        debugPrint("Transaksi berhasil dibuat.");
+        _cartItems = []; 
+        notifyListeners(); 
+        return response.data['data']['invoice_id']; // Mengembalikan ID tagihan
+      }
+      return null;
+    } on DioException catch (e) {
+      debugPrint("Gagal buat transaksi: ${e.response?.data}");
+      return null;
+    }
+  }
 }
