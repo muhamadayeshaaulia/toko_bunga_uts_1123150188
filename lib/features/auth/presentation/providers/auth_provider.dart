@@ -23,7 +23,7 @@ class AuthProvider extends ChangeNotifier {
   String? _backendToken;
   String? _errorMessage;
 
-  Map<String, dynamic>? _userModel; 
+  Map<String, dynamic>? _userModel;
   Map<String, dynamic>? get userModel => _userModel;
   bool get isAdmin => _userModel?['role'] == 'admin';
 
@@ -235,6 +235,8 @@ class AuthProvider extends ChangeNotifier {
         'email-already-in-use' => 'Email sudah terdaftar.',
         'user-not-found' => 'Akun tidak ditemukan.',
         'wrong-password' => 'Password salah.',
+        'invalid-credential' => 'Email atau Password salah.',
+        'user-disabled' => 'Akun ini telah dinonaktifkan.',
         'invalid-email' => 'Format email tidak valid.',
         'network-request-failed' => 'Tidak ada koneksi internet.',
         _ => 'Terjadi kesalahan: $code',
