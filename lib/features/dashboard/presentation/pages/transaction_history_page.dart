@@ -31,11 +31,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
         ),
       );
 
-      if (response.statusCode == 200 && response.data['success'] == true) {
+      if (response.statusCode == 200 && response.data['data'] != null) {
         setState(() {
-          _transactions = response.data['data'] ?? [];
-          // Urutkan dari yang terbaru (opsional, jika dari backend belum urut)
-          _transactions.sort((a, b) => b['ID'].compareTo(a['ID']));
+          _transactions = response.data['data'];
         });
       }
     } on DioException catch (e) {
