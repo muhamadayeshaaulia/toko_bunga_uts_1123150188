@@ -4,6 +4,8 @@ import '../../../../features/auth/presentation/providers/auth_provider.dart';
 import '../../dashboard/presentation/providers/cart_provider.dart';
 import '../../dashboard/presentation/providers/product_provider.dart';
 import '../../../../core/services/notification_service.dart';
+import '../../../../features/catalog/pages/product_detail_page.dart';
+import '../../checkout/pages/chekout_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -82,11 +84,20 @@ class _HomePageState extends State<HomePage> {
                 itemCount: products.length,
                 itemBuilder: (context, i) {
                   final p = products[i];
-                  return Card(
-                    elevation: 3,
-                    margin: EdgeInsets.zero,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                    child: Column(
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProductDetailPage(product: p),
+                        ),
+                      );
+                    },
+                    child: Card(
+                      elevation: 3,
+                      margin: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                      child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Stack(
@@ -152,11 +163,15 @@ class _HomePageState extends State<HomePage> {
                                   height: 35, // Batasi tinggi tombol
                                   child: ElevatedButton(
                                     onPressed: () async {
-                                      await context.read<CartProvider>().addToCart(p.id);
-                                      NotificationService.showNotification(
-                                        title: "716_Production",
-                                        body: "Yey $userName, ${p.name} sudah masuk keranjang!",
-                                      );
+                                      final cart = context.read<CartProvider>();
+                                      await cart.clearCartInDatabase();
+                                      await cart.addToCart(p.id);
+                                      if (context.mounted) {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(builder: (context) => const CheckoutPage()),
+                                        );
+                                      }
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.blueAccent,
@@ -172,7 +187,8 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ],
                     ),
-                  );
+                  ),
+                );
                 },
               ),
             ),
