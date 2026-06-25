@@ -4,6 +4,7 @@ import '../../checkout/pages/chekout_page.dart';
 import '../../dashboard/presentation/providers/cart_provider.dart';
 import '../../../core/services/notification_service.dart';
 import '../../auth/presentation/providers/auth_provider.dart';
+import '../../../core/utils/currency_formatter.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -79,8 +80,8 @@ class _CartPageState extends State<CartPage> {
                                   children: [
                                     Text(product?.name ?? 'Produk', style: const TextStyle(fontWeight: FontWeight.bold)),
                                     const SizedBox(height: 4),
-                                    Text('Rp ${product?.price.toStringAsFixed(0)}', 
-                                      style: TextStyle(color: Colors.blue.shade700, fontWeight: FontWeight.bold)),
+                                    Text(CurrencyFormatter.formatRupiah(product?.price ?? 0), 
+                                      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blueAccent)),
                                   ],
                                 ),
                               ),
@@ -133,7 +134,7 @@ class _CartPageState extends State<CartPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text('Total Pembayaran', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                          Text('Rp ${cartProvider.totalPrice.toStringAsFixed(0)}', 
+                          Text(CurrencyFormatter.formatRupiah(cartProvider.totalPrice), 
                             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
                         ],
                       ),

@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import '../../../../core/services/secure_storage.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/services/dio_client.dart';
+import '../../../../core/utils/currency_formatter.dart';
 
 class TransactionHistoryPage extends StatefulWidget {
   const TransactionHistoryPage({super.key});
@@ -38,10 +39,10 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
         });
       }
     } on DioException catch (e) {
-      debugPrint("Gagal mengambil riwayat transaksi: \${e.response?.data}");
+      debugPrint("Gagal mengambil riwayat transaksi: ${e.response?.data}");
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal memuat transaksi: \${e.message}')),
+          SnackBar(content: Text('Gagal memuat transaksi: ${e.message}')),
         );
       }
     } finally {
@@ -90,7 +91,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                     itemBuilder: (context, index) {
                       final trx = _transactions[index];
                       final invoiceId = trx['invoice_id'] ?? '-';
-                      final total = (trx['total_amount'] ?? 0).toStringAsFixed(0);
+                      final total = trx['total_amount'] ?? 0;
                       final status = trx['status'] ?? 'pending';
 
                       return Card(
@@ -148,7 +149,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                'Rp $total',
+                                CurrencyFormatter.formatRupiah(total),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,

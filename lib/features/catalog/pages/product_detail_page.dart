@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../dashboard/data/model/product_model.dart' hide AuthProvider, AuthStatus;
 import '../../dashboard/presentation/providers/cart_provider.dart';
 import '../../../../core/services/notification_service.dart';
+import '../../../../core/utils/currency_formatter.dart';
 import '../../auth/presentation/providers/auth_provider.dart';
 import '../../checkout/pages/chekout_page.dart';
 import '../../cart/pages/cart_page.dart';
@@ -94,7 +95,7 @@ class ProductDetailPage extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Rp ${product.price.toStringAsFixed(0)}',
+                              CurrencyFormatter.formatRupiah(product.price),
                               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blueAccent),
                             ),
                             Container(

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../../features/auth/presentation/providers/auth_provider.dart';
 import '../../dashboard/presentation/providers/cart_provider.dart';
 import '../../dashboard/presentation/providers/product_provider.dart';
+import '../../../../core/utils/currency_formatter.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../features/catalog/pages/product_detail_page.dart';
 import '../../checkout/pages/chekout_page.dart';
@@ -152,7 +153,7 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      'Rp ${p.price.toStringAsFixed(0)}', 
+                                      CurrencyFormatter.formatRupiah(p.price),
                                       style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.w800, fontSize: 13),
                                     ),
                                   ],

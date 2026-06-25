@@ -48,6 +48,10 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
     }
   }
 
+  String _formatRupiah(num amount) {
+    return 'Rp ${amount.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}';
+  }
+
   Future<void> _loadStatus() async {
     setState(() => _isLoadingStatus = true);
     final prefs = await SharedPreferences.getInstance();
@@ -118,9 +122,9 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
                       child: Text('${widget.directQuantity}x'),
                     ),
                     title: Text(widget.directBuyProduct!.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text('Rp ${widget.directBuyProduct!.price.toStringAsFixed(0)}'),
+                    subtitle: Text(_formatRupiah(widget.directBuyProduct!.price)),
                     trailing: Text(
-                      'Rp ${displayTotal.toStringAsFixed(0)}',
+                      _formatRupiah(displayTotal),
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   );
@@ -132,9 +136,9 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
                     child: Text('${item.quantity}x'),
                   ),
                   title: Text(item.product?.name ?? 'Produk', style: const TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Text('Rp ${item.product?.price.toStringAsFixed(0)}'),
+                  subtitle: Text(_formatRupiah(item.product?.price ?? 0)),
                   trailing: Text(
-                    'Rp ${(item.quantity * (item.product?.price ?? 0)).toStringAsFixed(0)}',
+                    _formatRupiah(item.quantity * (item.product?.price ?? 0)),
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 );
@@ -172,7 +176,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       const Text('E-Money Mamah Saya', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueAccent)),
-                                      Text('Saldo: Rp ${_balance.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                      Text('Saldo: ${_formatRupiah(_balance)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                                     ],
                                   )
                                 : const Column(
@@ -208,7 +212,7 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text('Total Biaya', style: TextStyle(fontSize: 18)),
-                    Text('Rp ${displayTotal.toStringAsFixed(0)}', 
+                    Text(_formatRupiah(displayTotal), 
                       style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
                   ],
                 ),

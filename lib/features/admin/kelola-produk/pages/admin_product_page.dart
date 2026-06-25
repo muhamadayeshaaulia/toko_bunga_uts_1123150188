@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../dashboard/data/model/product_model.dart';
 import '../../../dashboard/presentation/providers/product_provider.dart';
+import '../../../../core/utils/currency_formatter.dart';
 import '../sheet/product_form_sheet.dart';
 
 class AdminProductPage extends StatefulWidget {
@@ -85,8 +86,8 @@ class _AdminProductPageState extends State<AdminProductPage> {
                                 child: Text(
                                   p.category.toUpperCase(),
                                   style: const TextStyle(
-                                    fontSize: 10, 
-                                    fontWeight: FontWeight.bold, 
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
                                     color: Colors.redAccent
                                   ),
                                 ),
@@ -100,7 +101,7 @@ class _AdminProductPageState extends State<AdminProductPage> {
                             children: [
                               const SizedBox(height: 4),
                               Text(
-                                'Rp ${p.price.toStringAsFixed(0)} • Stok: ${p.stock}',
+                                '${CurrencyFormatter.formatRupiah(p.price)} • Stok: ${p.stock}',
                                 style: TextStyle(color: Colors.grey.shade800, fontWeight: FontWeight.w500),
                               ),
                               const SizedBox(height: 4),
@@ -152,7 +153,7 @@ class _AdminProductPageState extends State<AdminProductPage> {
                   SnackBar(content: Text("$productName berhasil dihapus")),
                 );
               }
-            }, 
+            },
             child: const Text('Hapus', style: TextStyle(color: Colors.red))
           ),
         ],
