@@ -81,9 +81,22 @@ class _ProfilePageState extends State<ProfilePage> {
                         : null,
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    userBackend?['name'] ?? userFirebase?.displayName ?? 'Nama Pengguna',
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        userBackend?['name'] ?? userFirebase?.displayName ?? 'Nama Pengguna',
+                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      if (userFirebase?.emailVerified ?? false) ...[
+                        const SizedBox(width: 6),
+                        const Icon(
+                          Icons.verified,
+                          color: Colors.blue,
+                          size: 20,
+                        ),
+                      ],
+                    ],
                   ),
                   Text(
                     userFirebase?.email ?? 'email@domain.com',
