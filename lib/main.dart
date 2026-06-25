@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:app_links/app_links.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -75,6 +76,14 @@ class _MyAppState extends State<MyApp> {
             title: 'Koneksi Berhasil',
             body: 'Aplikasi E-Money Wallet berhasil dihubungkan.',
           );
+          // Bounce kembali ke E-Wallet setelah mencatat status JIKA diminta
+          if (uri.queryParameters['bounce'] == 'true') {
+            try {
+              await launchUrl(Uri.parse('emoneyapp://bounce'), mode: LaunchMode.externalApplication);
+            } catch (e) {
+              debugPrint('Gagal bounce ke E-Wallet: $e');
+            }
+          }
         } else if (uri.host == 'disconnect_success') {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setBool('is_emoney_connected', false);
@@ -83,6 +92,14 @@ class _MyAppState extends State<MyApp> {
             title: 'Koneksi Terputus',
             body: 'Aplikasi E-Money Wallet berhasil diputuskan.',
           );
+          // Bounce kembali ke E-Wallet setelah mencatat status JIKA diminta
+          if (uri.queryParameters['bounce'] == 'true') {
+            try {
+              await launchUrl(Uri.parse('emoneyapp://bounce'), mode: LaunchMode.externalApplication);
+            } catch (e) {
+              debugPrint('Gagal bounce ke E-Wallet: $e');
+            }
+          }
         }
       }
     }, onError: (err) {
