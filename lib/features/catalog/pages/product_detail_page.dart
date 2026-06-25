@@ -133,11 +133,6 @@ class ProductDetailPage extends StatelessWidget {
                         title: "E-Commerce",
                         body: "Yey $userName, ${product.name} berhasil masuk keranjang!",
                       );
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('${product.name} ditambahkan ke keranjang')),
-                        );
-                      }
                     },
                     icon: const Icon(Icons.shopping_cart),
                     label: const Text('+ Keranjang'),
