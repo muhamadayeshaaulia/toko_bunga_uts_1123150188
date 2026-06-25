@@ -4,6 +4,9 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
+import 'core/services/dio_client.dart';
+import 'core/services/secure_storage.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import 'core/routes/app_router.dart';
@@ -59,6 +62,20 @@ class _MyAppState extends State<MyApp> {
     _linkSubscription = _appLinks.uriLinkStream.listen((uri) async {
       if (uri.scheme == 'ecommerceapp') {
         if (uri.host == 'success') {
+          final invoiceId = uri.queryParameters['invoice_id'];
+          if (invoiceId != null) {
+            try {
+              final String? token = await SecureStorageService.getToken();
+              await DioClient.instance.put(
+                '/transactions/$invoiceId',
+                data: {'status': 'SUCCESS'},
+                options: Options(headers: {'Authorization': 'Bearer $token'}),
+              );
+            } catch (e) {
+              debugPrint('Gagal update status transaksi: $e');
+            }
+          }
+
           NotificationService.showNotification(
             title: 'Pembayaran Berhasil',
             body: 'Tagihan Anda berhasil dibayar menggunakan E-Money Mamah Saya.',
