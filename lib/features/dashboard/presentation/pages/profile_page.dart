@@ -3,10 +3,50 @@ import 'package:provider/provider.dart';
 import '../../../admin/kelola-produk/pages/admin_product_page.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../../core/routes/app_router.dart';
+import '../../../../core/services/biometric_service.dart';
+import '../../../../core/services/notification_service.dart';
 import 'transaction_history_page.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  bool _isBiometricEnabled = false;
+  bool _isBiometricAvailable = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBiometricStatus();
+  }
+
+  Future<void> _loadBiometricStatus() async {
+    final available = await BiometricService.isAvailable();
+    final enabled = await BiometricService.isEnabled();
+    setState(() {
+      _isBiometricAvailable = available;
+      _isBiometricEnabled = enabled;
+    });
+  }
+
+  Future<void> _toggleBiometric(bool value) async {
+    if (value) {
+      // Minta autentikasi dulu sebelum mengaktifkan
+      final authenticated = await BiometricService.authenticate();
+      if (!authenticated) return; // Batal jika gagal
+    }
+    await BiometricService.setEnabled(value);
+    setState(() => _isBiometricEnabled = value);
+
+    await NotificationService.showNotification(
+      title: 'Keamanan Biometrik',
+      body: value ? 'Sidik jari berhasil diaktifkan.' : 'Sidik jari berhasil dinonaktifkan.',
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,10 +73,10 @@ class ProfilePage extends StatelessWidget {
                   CircleAvatar(
                     radius: 50,
                     backgroundColor: Colors.blue.shade100,
-                    backgroundImage: userFirebase?.photoURL != null 
-                        ? NetworkImage(userFirebase!.photoURL!) 
+                    backgroundImage: userFirebase?.photoURL != null
+                        ? NetworkImage(userFirebase!.photoURL!)
                         : null,
-                    child: userFirebase?.photoURL == null 
+                    child: userFirebase?.photoURL == null
                         ? const Icon(Icons.person, size: 50, color: Colors.blueAccent)
                         : null,
                   ),
@@ -59,7 +99,7 @@ class ProfilePage extends StatelessWidget {
                     child: Text(
                       auth.isAdmin ? 'ADMIN' : 'USER',
                       style: TextStyle(
-                        fontSize: 12, 
+                        fontSize: 12,
                         fontWeight: FontWeight.bold,
                         color: auth.isAdmin ? Colors.red : Colors.green,
                       ),
@@ -89,7 +129,7 @@ class ProfilePage extends StatelessWidget {
                     ),
                     const Divider(),
                   ],
-                  
+
                   _buildProfileMenu(
                     icon: Icons.settings_outlined,
                     title: 'Pengaturan Akun',
@@ -105,14 +145,66 @@ class ProfilePage extends StatelessWidget {
                       );
                     },
                   ),
+
+                  // ─── Toggle Biometrik ───
+                  if (_isBiometricAvailable) ...[
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 4),
+                      decoration: BoxDecoration(
+                        color: _isBiometricEnabled
+                            ? Colors.blue.shade50
+                            : Colors.grey.shade50,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: _isBiometricEnabled
+                              ? Colors.blue.shade200
+                              : Colors.grey.shade200,
+                        ),
+                      ),
+                      child: SwitchListTile(
+                        secondary: Icon(
+                          Icons.fingerprint,
+                          color: _isBiometricEnabled ? Colors.blueAccent : Colors.grey,
+                          size: 28,
+                        ),
+                        title: const Text(
+                          'Sidik Jari untuk Login',
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                        ),
+                        subtitle: Text(
+                          _isBiometricEnabled ? 'Aktif' : 'Nonaktif',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: _isBiometricEnabled ? Colors.blueAccent : Colors.grey,
+                          ),
+                        ),
+                        value: _isBiometricEnabled,
+                        onChanged: _toggleBiometric,
+                        activeColor: Colors.blueAccent,
+                      ),
+                    ),
+                  ] else ...[
+                    ListTile(
+                      leading: const Icon(Icons.fingerprint, color: Colors.grey, size: 28),
+                      title: const Text(
+                        'Sidik Jari untuk Login',
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.grey),
+                      ),
+                      subtitle: const Text(
+                        'Perangkat tidak mendukung biometrik',
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                    ),
+                  ],
+
                   _buildProfileMenu(
                     icon: Icons.shield_outlined,
                     title: 'Keamanan',
                     onTap: () {},
                   ),
                   const Divider(height: 40),
-                  
-                  // 3. Tombol Logout
+
+                  // Tombol Logout
                   SizedBox(
                     width: double.infinity,
                     height: 50,
@@ -124,8 +216,8 @@ class ProfilePage extends StatelessWidget {
                         }
                       },
                       icon: const Icon(Icons.logout_rounded, color: Colors.white),
-                      label: const Text('Keluar dari Akun', 
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                      label: const Text('Keluar dari Akun',
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.redAccent,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -135,18 +227,18 @@ class ProfilePage extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(height: 30),
           ],
         ),
       ),
     );
   }
 
-  // Helper Widget dengan tambahan parameter color
   Widget _buildProfileMenu({
-    required IconData icon, 
-    required String title, 
+    required IconData icon,
+    required String title,
     required VoidCallback onTap,
-    Color color = Colors.blueAccent, 
+    Color color = Colors.blueAccent,
   }) {
     return ListTile(
       leading: Icon(icon, color: color),
