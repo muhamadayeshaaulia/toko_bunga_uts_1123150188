@@ -134,7 +134,7 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ),
                         // Konten Teks
-                        Expanded( 
+                        Expanded(
                           child: Padding(
                             padding: const EdgeInsets.all(10),
                             child: Column(
@@ -145,7 +145,7 @@ class _HomePageState extends State<HomePage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      p.name, 
+                                      p.name,
                                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
