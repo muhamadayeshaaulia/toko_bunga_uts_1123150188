@@ -64,7 +64,9 @@ enum AuthStatus {
 
 class AuthProvider extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    serverClientId: '356293982231-bf9q8gaotr692tane9l4cd17od6fot1q.apps.googleusercontent.com',
+  );
 
   AuthStatus _status = AuthStatus.initial;
   User? _firebaseUser;
