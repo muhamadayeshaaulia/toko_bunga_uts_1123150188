@@ -57,7 +57,7 @@ class _MyAppState extends State<MyApp> {
       if (uri.scheme == 'ecommerceapp') {
         if (uri.host == 'success') {
           NotificationService.showNotification(
-            title: 'Pembayaran Berhasil! 🎉',
+            title: 'Pembayaran Berhasil',
             body: 'Tagihan Anda berhasil dibayar menggunakan E-Money Mamah Saya.',
           );
           // Force routing ke halaman history
@@ -72,7 +72,7 @@ class _MyAppState extends State<MyApp> {
           await prefs.setBool('is_emoney_connected', true);
 
           NotificationService.showNotification(
-            title: 'Koneksi Berhasil! 🔗',
+            title: 'Koneksi Berhasil',
             body: 'Aplikasi E-Money Wallet berhasil dihubungkan.',
           );
         } else if (uri.host == 'disconnect_success') {
@@ -80,7 +80,7 @@ class _MyAppState extends State<MyApp> {
           await prefs.setBool('is_emoney_connected', false);
 
           NotificationService.showNotification(
-            title: 'Koneksi Terputus 💔',
+            title: 'Koneksi Terputus',
             body: 'Aplikasi E-Money Wallet berhasil diputuskan.',
           );
         }
