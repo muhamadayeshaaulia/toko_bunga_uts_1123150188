@@ -5,6 +5,7 @@ import '../../dashboard/presentation/providers/cart_provider.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../auth/presentation/providers/auth_provider.dart';
 import '../../checkout/pages/chekout_page.dart';
+import '../../cart/pages/cart_page.dart';
 
 class ProductDetailPage extends StatelessWidget {
   final ProductModel product;
@@ -24,6 +25,46 @@ class ProductDetailPage extends StatelessWidget {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
+        actions: [
+          Consumer<CartProvider>(
+            builder: (context, cart, _) {
+              final itemCount = cart.cartItems.fold<int>(0, (sum, item) => sum + item.quantity);
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.shopping_cart_outlined),
+                    tooltip: 'Keranjang',
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const CartPage()),
+                      );
+                    },
+                  ),
+                  if (itemCount > 0)
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                        child: Text(
+                          itemCount > 99 ? '99+' : '$itemCount',
+                          style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
