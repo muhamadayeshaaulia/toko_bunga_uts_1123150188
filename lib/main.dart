@@ -30,6 +30,8 @@ void main() async {
 }
 
 class MyApp extends StatefulWidget {
+  static final ValueNotifier<bool> refreshTrigger = ValueNotifier(false);
+
   const MyApp({super.key});
 
   @override
@@ -72,6 +74,13 @@ class _MyAppState extends State<MyApp> {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setBool('is_emoney_connected', true);
 
+          final token = uri.queryParameters['token'];
+          if (token != null) {
+            await prefs.setString('emoney_token', token);
+          }
+
+          MyApp.refreshTrigger.value = !MyApp.refreshTrigger.value;
+
           NotificationService.showNotification(
             title: 'Koneksi Berhasil',
             body: 'Aplikasi E-Money Wallet berhasil dihubungkan.',
@@ -87,6 +96,9 @@ class _MyAppState extends State<MyApp> {
         } else if (uri.host == 'disconnect_success') {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setBool('is_emoney_connected', false);
+          await prefs.remove('emoney_token');
+
+          MyApp.refreshTrigger.value = !MyApp.refreshTrigger.value;
 
           NotificationService.showNotification(
             title: 'Koneksi Terputus',

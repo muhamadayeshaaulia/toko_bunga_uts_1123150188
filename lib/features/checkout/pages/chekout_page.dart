@@ -9,6 +9,7 @@ import '../../../../features/auth/presentation/providers/auth_provider.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/services/secure_storage.dart';
 import '../../dashboard/presentation/pages/transaction_history_page.dart';
+import '../../../../main.dart';
 
 class CheckoutPage extends StatefulWidget {
   final ProductModel? directBuyProduct;
@@ -30,10 +31,12 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _loadStatus();
+    MyApp.refreshTrigger.addListener(_loadStatus);
   }
 
   @override
   void dispose() {
+    MyApp.refreshTrigger.removeListener(_loadStatus);
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -53,18 +56,22 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
     double balance = 0;
     if (connected) {
       try {
-        final token = await SecureStorageService.getToken();
-        if (token != null) {
+        final emoneyToken = prefs.getString('emoney_token');
+        if (emoneyToken != null) {
           final response = await Dio().get(
             'http://192.168.8.196:8081/v1/account',
             options: Options(
-              headers: {'Authorization': 'Bearer $token'},
+              headers: {'Authorization': 'Bearer $emoneyToken'},
               validateStatus: (status) => status! < 500,
             ),
           );
           if (response.statusCode == 200 && response.data != null) {
-            balance = (response.data['balance'] as num).toDouble();
+            balance = (response.data['data']['balance'] as num).toDouble();
+          } else {
+             debugPrint('Gagal token emoney tidak valid? ${response.statusCode}');
           }
+        } else {
+           debugPrint('emoney_token belum tersimpan');
         }
       } catch (e) {
         debugPrint('Gagal ambil saldo: $e');
