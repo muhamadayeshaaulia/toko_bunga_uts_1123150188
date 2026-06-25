@@ -250,7 +250,8 @@ class _CheckoutPageState extends State<CheckoutPage> with WidgetsBindingObserver
                       if (invoiceId != null) {
 
                         // Memanggil Deep Link ke Aplikasi E-Money
-                        final token = await SecureStorageService.getToken();
+                        final prefs = await SharedPreferences.getInstance();
+                        final token = prefs.getString('emoney_token');
                         final url = Uri.parse('emoneyapp://pay?invoice_id=$invoiceId&amount=$total&token=$token');
                         
                         try {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../../../../core/services/secure_storage.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/services/dio_client.dart';
 import '../../../../core/utils/currency_formatter.dart';
 
@@ -160,7 +161,8 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                                 const SizedBox(height: 4),
                                 InkWell(
                                   onTap: () async {
-                                    final token = await SecureStorageService.getToken();
+                                    final prefs = await SharedPreferences.getInstance();
+                                    final token = prefs.getString('emoney_token');
                                     final url = Uri.parse('emoneyapp://pay?invoice_id=$invoiceId&amount=$total&token=$token');
                                     try {
                                       await launchUrl(url, mode: LaunchMode.externalApplication);
