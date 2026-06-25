@@ -15,8 +15,8 @@ class ProductDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = context.read<AuthProvider>();
     final userName = auth.userModel?['name'] ?? auth.firebaseUser?.displayName ?? 'Pengguna';
-    // Asumsi jumlah terjual = id * 15 + 12 (karena data API tidak menyediakan sold count)
-    final soldCount = product.id * 15 + 12;
+    // Menggunakan data asli dari backend
+    final soldCount = product.sold;
 
     return Scaffold(
       appBar: AppBar(

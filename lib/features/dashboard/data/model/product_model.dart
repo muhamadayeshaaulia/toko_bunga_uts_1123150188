@@ -12,6 +12,7 @@ class ProductModel {
   final String category;
   final String? description;
   final int stock;
+  final int sold;
   final String imageUrl;
 
   ProductModel({
@@ -21,6 +22,7 @@ class ProductModel {
     required this.category,
     this.description,
     required this.stock,
+    required this.sold,
     required this.imageUrl,
   });
 
@@ -32,6 +34,7 @@ class ProductModel {
       category: json['category'] ?? '',
       description: json['description'],
       stock: json['stock'] ?? 0,
+      sold: json['sold'] ?? 0,
       imageUrl: json['image_url'] ?? '',
     );
   }
@@ -44,6 +47,7 @@ class ProductModel {
       'category': category,
       'description': description,
       'stock': stock,
+      'sold': sold,
       'image_url': imageUrl,
     };
   }
