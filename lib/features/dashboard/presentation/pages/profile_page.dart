@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../admin/kelola-produk/pages/admin_product_page.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../../core/routes/app_router.dart';
@@ -214,6 +215,33 @@ class _ProfilePageState extends State<ProfilePage> {
                     icon: Icons.shield_outlined,
                     title: 'Keamanan',
                     onTap: () {},
+                  ),
+                  const Divider(),
+
+                  // ─── Hubungkan E-Money Wallet ───
+                  _buildProfileMenu(
+                    icon: Icons.account_balance_wallet_rounded,
+                    title: 'Hubungkan E-Money Wallet',
+                    color: Colors.green,
+                    onTap: () async {
+                      // Import secara manual di dalam function kalau import global belum ada
+                      // Tapi lebih baik import global, kita pakai uri launcher.
+                      final emoneyUri = Uri.parse('emoneyapp://connect');
+                      try {
+                        // Untuk android 11+ butuh <queries> di AndroidManifest.xml
+                        // Karena ini contoh langsung tembak aja:
+                        await launchUrl(emoneyUri, mode: LaunchMode.externalApplication);
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('E-Money Wallet belum terinstall atau gagal dibuka.'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      }
+                    },
                   ),
                   const Divider(height: 40),
 
