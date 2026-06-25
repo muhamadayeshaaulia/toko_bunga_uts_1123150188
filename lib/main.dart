@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:app_links/app_links.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -52,20 +53,39 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _initDeepLinks() async {
     _appLinks = AppLinks();
-    
-    _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
-      if (uri.scheme == 'ecommerceapp' && uri.host == 'success') {
-        NotificationService.showNotification(
-          title: 'Pembayaran Berhasil! 🎉',
-          body: 'Tagihan Anda berhasil dibayar menggunakan E-Money Mamah Saya.',
-        );
-        // Force routing ke halaman history
-        if (navigatorKey.currentState != null) {
-          // Hapus semua tumpukan layar (termasuk splash screen) agar tidak bentrok
-          navigatorKey.currentState!.pushNamedAndRemoveUntil('/dashboard', (route) => false);
-          navigatorKey.currentState!.push(
-            MaterialPageRoute(builder: (context) => const TransactionHistoryPage()),
+    _linkSubscription = _appLinks.uriLinkStream.listen((uri) async {
+      if (uri.scheme == 'ecommerceapp') {
+        if (uri.host == 'success') {
+          NotificationService.showNotification(
+            title: 'Pembayaran Berhasil! 🎉',
+            body: 'Tagihan Anda berhasil dibayar menggunakan E-Money Mamah Saya.',
           );
+          // Force routing ke halaman history
+          if (navigatorKey.currentState != null) {
+            navigatorKey.currentState!.pushNamedAndRemoveUntil('/dashboard', (route) => false);
+            navigatorKey.currentState!.push(
+              MaterialPageRoute(builder: (context) => const TransactionHistoryPage()),
+            );
+          }
+        } else if (uri.host == 'connect_success') {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setBool('is_emoney_connected', true);
+
+          NotificationService.showNotification(
+            title: 'Koneksi Berhasil! 🔗',
+            body: 'Aplikasi E-Money Wallet berhasil dihubungkan.',
+          );
+
+          if (navigatorKey.currentState != null) {
+            ScaffoldMessenger.of(navigatorKey.currentState!.context).showSnackBar(
+              const SnackBar(
+                content: Text('Berhasil terhubung ke E-Money Wallet!'),
+                backgroundColor: Colors.green,
+              ),
+            );
+            // Refresh profile jika sedang di halaman profil
+            // Kita bisa biarkan saja, SharedPreferences akan ke-reload saat setState.
+          }
         }
       }
     }, onError: (err) {

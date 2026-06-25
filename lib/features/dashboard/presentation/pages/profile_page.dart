@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../admin/kelola-produk/pages/admin_product_page.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../../core/routes/app_router.dart';
@@ -18,11 +19,20 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   bool _isBiometricEnabled = false;
   bool _isBiometricAvailable = false;
+  bool _isEmoneyConnected = false;
 
   @override
   void initState() {
     super.initState();
     _loadBiometricStatus();
+    _loadEmoneyStatus();
+  }
+
+  Future<void> _loadEmoneyStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isEmoneyConnected = prefs.getBool('is_emoney_connected') ?? false;
+    });
   }
 
   Future<void> _loadBiometricStatus() async {
@@ -218,31 +228,67 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   const Divider(),
 
-                  // ─── Hubungkan E-Money Wallet ───
-                  _buildProfileMenu(
-                    icon: Icons.account_balance_wallet_rounded,
-                    title: 'Hubungkan E-Money Wallet',
-                    color: Colors.green,
-                    onTap: () async {
-                      // Import secara manual di dalam function kalau import global belum ada
-                      // Tapi lebih baik import global, kita pakai uri launcher.
-                      final emoneyUri = Uri.parse('emoneyapp://connect');
-                      try {
-                        // Untuk android 11+ butuh <queries> di AndroidManifest.xml
-                        // Karena ini contoh langsung tembak aja:
-                        await launchUrl(emoneyUri, mode: LaunchMode.externalApplication);
-                      } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('E-Money Wallet belum terinstall atau gagal dibuka.'),
-                              backgroundColor: Colors.red,
+                  // ─── Hubungkan / Putuskan E-Money Wallet ───
+                  if (_isEmoneyConnected)
+                    ListTile(
+                      leading: const Icon(Icons.account_balance_wallet_rounded, color: Colors.blue),
+                      title: const Text('E-Money Mamah Saya', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                      subtitle: const Text('Terhubung', style: TextStyle(fontSize: 12, color: Colors.green)),
+                      trailing: TextButton(
+                        onPressed: () async {
+                          final confirm = await showDialog<bool>(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              title: const Text('Putuskan Hubungan'),
+                              content: const Text('Anda yakin ingin memutuskan hubungan dengan E-Money Wallet?'),
+                              actions: [
+                                TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Batal')),
+                                ElevatedButton(
+                                  onPressed: () => Navigator.pop(ctx, true),
+                                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                  child: const Text('Putuskan', style: TextStyle(color: Colors.white)),
+                                ),
+                              ],
                             ),
                           );
+
+                          if (confirm == true) {
+                            final prefs = await SharedPreferences.getInstance();
+                            await prefs.setBool('is_emoney_connected', false);
+                            setState(() {
+                              _isEmoneyConnected = false;
+                            });
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Hubungan dengan E-Money Wallet diputuskan.')),
+                              );
+                            }
+                          }
+                        },
+                        child: const Text('Putuskan', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                      ),
+                    )
+                  else
+                    _buildProfileMenu(
+                      icon: Icons.account_balance_wallet_rounded,
+                      title: 'Hubungkan E-Money Wallet',
+                      color: Colors.green,
+                      onTap: () async {
+                        final emoneyUri = Uri.parse('emoneyapp://connect');
+                        try {
+                          await launchUrl(emoneyUri, mode: LaunchMode.externalApplication);
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('E-Money Wallet belum terinstall atau gagal dibuka.'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
                         }
-                      }
-                    },
-                  ),
+                      },
+                    ),
                   const Divider(height: 40),
 
                   // Tombol Logout
