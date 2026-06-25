@@ -157,28 +157,28 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                   ],
                                 ),
-                                // Tombol Beli
+                                // Tombol Beli Langsung
                                 SizedBox(
                                   width: double.infinity,
                                   height: 35, // Batasi tinggi tombol
                                   child: ElevatedButton(
-                                    onPressed: () async {
-                                      final cart = context.read<CartProvider>();
-                                      await cart.clearCartInDatabase();
-                                      await cart.addToCart(p.id);
-                                      if (context.mounted) {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(builder: (context) => const CheckoutPage()),
-                                        );
-                                      }
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => CheckoutPage(
+                                            directBuyProduct: p,
+                                            directQuantity: 1,
+                                          ),
+                                        ),
+                                      );
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.blueAccent,
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                       padding: EdgeInsets.zero,
                                     ),
-                                    child: const Text('Beli', style: TextStyle(color: Colors.white, fontSize: 12)),
+                                    child: const Text('Beli', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
                                   ),
                                 ),
                               ],

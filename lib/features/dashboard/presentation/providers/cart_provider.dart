@@ -169,15 +169,22 @@ class CartProvider extends ChangeNotifier {
   }
 
   // Fungsi membuat transaksi dan memanggil Golang POST /transactions
-  Future<String?> createTransaction() async {
+  Future<String?> createTransaction({double? amount, int? directProductId, int? directQuantity}) async {
     try {
       final String? token = await SecureStorageService.getToken();
 
+      final data = <String, dynamic>{
+        'total_amount': amount ?? totalPrice,
+      };
+
+      if (directProductId != null && directQuantity != null) {
+        data['product_id'] = directProductId;
+        data['quantity'] = directQuantity;
+      }
+
       final response = await DioClient.instance.post(
         '/transactions', 
-        data: {
-          'total_amount': totalPrice,
-        },
+        data: data,
         options: Options(
           headers: {'Authorization': 'Bearer $token'},
         ),
@@ -185,8 +192,10 @@ class CartProvider extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         debugPrint("Transaksi berhasil dibuat.");
-        _cartItems = []; 
-        notifyListeners(); 
+        if (directProductId == null) {
+          _cartItems = []; 
+          notifyListeners(); 
+        }
         return response.data['data']['invoice_id']; // Mengembalikan ID tagihan
       }
       return null;

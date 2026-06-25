@@ -187,17 +187,17 @@ class ProductDetailPage extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () async {
-                      // Beli langsung: Kosongkan keranjang, tambah produk ini, lalu ke checkout
-                      final cart = context.read<CartProvider>();
-                      await cart.clearCartInDatabase(); 
-                      await cart.addToCart(product.id);
-                      if (context.mounted) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const CheckoutPage()),
-                        );
-                      }
+                    onPressed: () {
+                      // Beli langsung: bawa produk ini ke checkout page tanpa mengganggu keranjang
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CheckoutPage(
+                            directBuyProduct: product,
+                            directQuantity: 1,
+                          ),
+                        ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
