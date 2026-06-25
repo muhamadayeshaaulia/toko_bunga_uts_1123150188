@@ -253,15 +253,18 @@ class _ProfilePageState extends State<ProfilePage> {
                           );
 
                           if (confirm == true) {
-                            final prefs = await SharedPreferences.getInstance();
-                            await prefs.setBool('is_emoney_connected', false);
-                            setState(() {
-                              _isEmoneyConnected = false;
-                            });
-                            if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Hubungan dengan E-Money Wallet diputuskan.')),
-                              );
+                            final emoneyUri = Uri.parse('emoneyapp://disconnect');
+                            try {
+                              await launchUrl(emoneyUri, mode: LaunchMode.externalApplication);
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('E-Money Wallet belum terinstall atau gagal dibuka.'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
                             }
                           }
                         },

@@ -75,17 +75,14 @@ class _MyAppState extends State<MyApp> {
             title: 'Koneksi Berhasil! 🔗',
             body: 'Aplikasi E-Money Wallet berhasil dihubungkan.',
           );
+        } else if (uri.host == 'disconnect_success') {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setBool('is_emoney_connected', false);
 
-          if (navigatorKey.currentState != null) {
-            ScaffoldMessenger.of(navigatorKey.currentState!.context).showSnackBar(
-              const SnackBar(
-                content: Text('Berhasil terhubung ke E-Money Wallet!'),
-                backgroundColor: Colors.green,
-              ),
-            );
-            // Refresh profile jika sedang di halaman profil
-            // Kita bisa biarkan saja, SharedPreferences akan ke-reload saat setState.
-          }
+          NotificationService.showNotification(
+            title: 'Koneksi Terputus 💔',
+            body: 'Aplikasi E-Money Wallet berhasil diputuskan.',
+          );
         }
       }
     }, onError: (err) {
